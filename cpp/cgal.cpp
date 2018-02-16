@@ -249,7 +249,15 @@ MeshT* convexParts(
   MeshT* out = (MeshT*)malloc(*nparts * sizeof(MeshT));
   size_t i = 0;
   for(Polyhedron polyh : convex_parts){
-    out[i] = surfacemeshToMesh(polyhedron2surfacemesh(polyh));
+    Surface_mesh smesh = polyhedron2surfacemesh(polyh);
+    out[i] = surfacemeshToMesh(smesh);
+    /* write OFF file */
+    char filename [50];
+    sprintf(filename, "cgal%04Iu.off", i);
+    std::ofstream outfile;
+    outfile.open(filename);
+    outfile << smesh;
+    outfile.close();
     i++;
   }
   return out;
