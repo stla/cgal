@@ -1,0 +1,15 @@
+resolver: lts-10.5
+
+packages:
+- .
+# Dependency packages to be pulled from upstream that are not in the resolver
+# (e.g., acme-missiles-0.3)
+# extra-deps: []
+
+# Override default flag values for local packages and extra-deps
+# flags: {}
+
+extra-include-dirs:
+- C:\Users\sdl96354\AppData\Local\Programs\HaskellPlatform\8.2.1\msys\mingw64\include
+extra-lib-dirs:
+- C:\Users\sdl96354\AppData\Local\Programs\HaskellPlatform\8.2.1\msys\mingw64\lib

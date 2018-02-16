@@ -1,0 +1,45 @@
+name:                cgal
+version:             0.1.0.0
+homepage:            https://github.com/stla/cgal#readme
+license:             GPL-3
+author:              Stéphane Laurent
+maintainer:          laurent_step@yahoo.fr
+copyright:           2018 Stéphane Laurent
+category:            Web
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Lib
+--                     , Polyhedron2OFF
+                     , PolyhedraIntersection
+                     , Types
+                     , Mesh
+  build-depends:       base >= 4.7 && < 5
+                     , vector
+  include-dirs:        cpp
+  C-sources:           cpp/intersection.cpp
+                     , cpp/utils.cpp
+  extra-libraries:     stdc++
+                     , CGAL
+                     , CGAL_Core
+                     , mpfr
+                     , gmp
+  ghc-options:         -pgml g++
+  other-extensions:    CPP
+                     , ForeignFunctionInterface
+  cc-options:          -fPIC
+  default-language:    Haskell2010
+
+executable cgal
+  ghc-options:         -Wall -fllvm
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5.0,
+                       cgal
+  main-is:             Main.hs
+
+source-repository head
+  type:     git
+  location: https://github.com/stla/cgal
