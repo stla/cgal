@@ -1,6 +1,7 @@
 import PolyhedraIntersection
+import Text.Show.Pretty
 
 main :: IO ()
 main = do
-  test
-  putStrLn "done"
+  mesh <- test
+  pPrint mesh

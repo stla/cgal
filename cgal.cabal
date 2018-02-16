@@ -18,7 +18,6 @@ library
                      , Types
                      , Mesh
   build-depends:       base >= 4.7 && < 5
-                     , vector
   include-dirs:        cpp
   C-sources:           cpp/intersection.cpp
                      , cpp/utils.cpp
@@ -36,8 +35,9 @@ library
 executable cgal
   ghc-options:         -Wall -fllvm
   default-language:    Haskell2010
-  build-depends:       base >= 4.7 && < 5.0,
-                       cgal
+  build-depends:       base >= 4.7 && < 5.0
+                     , cgal
+                     , pretty-show
   main-is:             Main.hs
 
 source-repository head

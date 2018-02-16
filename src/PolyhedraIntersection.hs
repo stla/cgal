@@ -1,18 +1,13 @@
-{-# LANGUAGE ForeignFunctionInterface #-}
-{-# LANGUAGE CPP #-}
 module PolyhedraIntersection
   where
 import           Foreign.C.Types
-import           Foreign.Marshal.Alloc      (free, mallocBytes)
-import           Foreign.Marshal.Array      (pokeArray)
-import           Foreign.Ptr                (Ptr)
-import           Foreign.Storable           (sizeOf)
+import           Foreign.Marshal.Alloc (free, mallocBytes)
+import           Foreign.Marshal.Array (pokeArray)
+import           Foreign.Storable      (peek, sizeOf)
+import           Mesh
+import           Types
 
-foreign import ccall unsafe "intersectionTwoPolyhedra" c_polyhedraIntersection
-  :: Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize
-  -> Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize -> IO CInt
-
-polyhedraIntersection :: ([[Double]],[[Int]]) -> ([[Double]],[[Int]]) -> IO ()
+polyhedraIntersection :: ([[Double]],[[Int]]) -> ([[Double]],[[Int]]) -> IO Mesh
 polyhedraIntersection (vertices1, faces1) (vertices2, faces2) = do
   let nvertices1 = length vertices1
       nfaces1 = length faces1
@@ -34,19 +29,20 @@ polyhedraIntersection (vertices1, faces1) (vertices2, faces2) = do
   pokeArray faces2Ptr (concatMap (map fromIntegral) faces2)
   facesizes2Ptr <- mallocBytes (nfaces2 * sizeOf (undefined :: CInt))
   pokeArray facesizes2Ptr (map fromIntegral facesizes2)
-  _ <- c_polyhedraIntersection vertices1Ptr (fromIntegral nvertices1) faces1Ptr
-                               facesizes1Ptr (fromIntegral nfaces1)
-                               vertices2Ptr (fromIntegral nvertices2) faces2Ptr
-                               facesizes2Ptr (fromIntegral nfaces2)
-  putStrLn "done"
+  meshPtr <- c_polyhedraIntersection vertices1Ptr (fromIntegral nvertices1) faces1Ptr
+                                     facesizes1Ptr (fromIntegral nfaces1)
+                                     vertices2Ptr (fromIntegral nvertices2) faces2Ptr
+                                     facesizes2Ptr (fromIntegral nfaces2)
   free vertices1Ptr
   free faces1Ptr
   free facesizes1Ptr
   free vertices2Ptr
   free faces2Ptr
   free facesizes2Ptr
+  cmesh <- peek meshPtr
+  cMeshToMesh cmesh
 
-test :: IO ()
+test :: IO Mesh
 test = do
   let vs1 = [ [-1,-1,-1],
               [-1,-1, 1],
@@ -98,11 +94,3 @@ test = do
                 , [ 3 , 7 , 11 ]
                 ]
   polyhedraIntersection (vs1, faces1) (vs2, faces2)
-
-
--- void polyhedron2off(
---   double* vertices,
---   size_t nvertices,
---   int* faces,
---   int* facesizes,
---   size_t nfaces)

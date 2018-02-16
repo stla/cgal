@@ -1,3 +1,4 @@
+{-# LINE 1 "Mesh.hsc" #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Mesh
@@ -8,21 +9,25 @@ import           Types
 import           Foreign
 import           Foreign.C.Types
 
-#include "intersection.hpp"
+
 
 data CVertex = CVertex {
   __point :: Ptr CDouble
 }
 
 instance Storable CVertex where
-    sizeOf    __ = #{size VertexT}
-    alignment __ = #{alignment VertexT}
+    sizeOf    __ = (8)
+{-# LINE 19 "Mesh.hsc" #-}
+    alignment __ = 8
+{-# LINE 20 "Mesh.hsc" #-}
     peek ptr = do
-      point'  <- #{peek VertexT, point} ptr
+      point'  <- (\hsc_ptr -> peekByteOff hsc_ptr 0) ptr
+{-# LINE 22 "Mesh.hsc" #-}
       return CVertex { __point = point' }
     poke ptr (CVertex r1)
       = do
-        #{poke VertexT, point} ptr r1
+        (\hsc_ptr -> pokeByteOff hsc_ptr 0) ptr r1
+{-# LINE 26 "Mesh.hsc" #-}
 
 cVertexToVertex3 :: CVertex -> IO Vertex3
 cVertexToVertex3 cvertex = do
@@ -35,17 +40,23 @@ data CFace = CFace {
 }
 
 instance Storable CFace where
-    sizeOf    __ = #{size FaceT}
-    alignment __ = #{alignment FaceT}
+    sizeOf    __ = (16)
+{-# LINE 39 "Mesh.hsc" #-}
+    alignment __ = 8
+{-# LINE 40 "Mesh.hsc" #-}
     peek ptr = do
-      ids  <- #{peek FaceT, verticesIds} ptr
-      nvs  <- #{peek FaceT, nvertices} ptr
+      ids  <- (\hsc_ptr -> peekByteOff hsc_ptr 0) ptr
+{-# LINE 42 "Mesh.hsc" #-}
+      nvs  <- (\hsc_ptr -> peekByteOff hsc_ptr 8) ptr
+{-# LINE 43 "Mesh.hsc" #-}
       return CFace { __verticesIds = ids
                    , __nvertices   = nvs }
     poke ptr (CFace r1 r2)
       = do
-        #{poke FaceT, verticesIds} ptr r1
-        #{poke FaceT, nvertices} ptr r2
+        (\hsc_ptr -> pokeByteOff hsc_ptr 0) ptr r1
+{-# LINE 48 "Mesh.hsc" #-}
+        (\hsc_ptr -> pokeByteOff hsc_ptr 8) ptr r2
+{-# LINE 49 "Mesh.hsc" #-}
 
 cFaceToFace :: CFace -> IO Face
 cFaceToFace cface = do
@@ -63,14 +74,21 @@ data CMesh = CMesh {
 }
 
 instance Storable CMesh where
-    sizeOf    __ = #{size MeshT}
-    alignment __ = #{alignment MeshT}
+    sizeOf    __ = (40)
+{-# LINE 67 "Mesh.hsc" #-}
+    alignment __ = 8
+{-# LINE 68 "Mesh.hsc" #-}
     peek ptr = do
-      vs <- #{peek MeshT, vertices} ptr
-      nvs <- #{peek MeshT, nvertices} ptr
-      fs <- #{peek MeshT, faces} ptr
-      fss <- #{peek MeshT, faceSizes} ptr
-      nf <- #{peek MeshT, nfaces} ptr
+      vs <- (\hsc_ptr -> peekByteOff hsc_ptr 0) ptr
+{-# LINE 70 "Mesh.hsc" #-}
+      nvs <- (\hsc_ptr -> peekByteOff hsc_ptr 8) ptr
+{-# LINE 71 "Mesh.hsc" #-}
+      fs <- (\hsc_ptr -> peekByteOff hsc_ptr 16) ptr
+{-# LINE 72 "Mesh.hsc" #-}
+      fss <- (\hsc_ptr -> peekByteOff hsc_ptr 24) ptr
+{-# LINE 73 "Mesh.hsc" #-}
+      nf <- (\hsc_ptr -> peekByteOff hsc_ptr 32) ptr
+{-# LINE 74 "Mesh.hsc" #-}
       return CMesh { __vertices = vs
                    , __nvertices' = nvs
                    , __faces = fs
@@ -78,11 +96,16 @@ instance Storable CMesh where
                    , __nfaces = nf }
     poke ptr (CMesh r1 r2 r3 r4 r5)
       = do
-        #{poke MeshT, vertices} ptr r1
-        #{poke MeshT, nvertices} ptr r2
-        #{poke MeshT, faces} ptr r3
-        #{poke MeshT, faceSizes} ptr r4
-        #{poke MeshT, nfaces} ptr r5
+        (\hsc_ptr -> pokeByteOff hsc_ptr 0) ptr r1
+{-# LINE 82 "Mesh.hsc" #-}
+        (\hsc_ptr -> pokeByteOff hsc_ptr 8) ptr r2
+{-# LINE 83 "Mesh.hsc" #-}
+        (\hsc_ptr -> pokeByteOff hsc_ptr 16) ptr r3
+{-# LINE 84 "Mesh.hsc" #-}
+        (\hsc_ptr -> pokeByteOff hsc_ptr 24) ptr r4
+{-# LINE 85 "Mesh.hsc" #-}
+        (\hsc_ptr -> pokeByteOff hsc_ptr 32) ptr r5
+{-# LINE 86 "Mesh.hsc" #-}
 
 cMeshToMesh :: CMesh -> IO Mesh
 cMeshToMesh cmesh = do

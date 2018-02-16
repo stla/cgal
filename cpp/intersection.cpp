@@ -142,9 +142,9 @@ MeshT* intersectPolyhedra(Polyhedron P1, Polyhedron P2){
   std::cout << "Iterate over faces\n";
   {
     unsigned i_face = 0;
-    std::vector<unsigned> verticesIds;
     BOOST_FOREACH(face_descriptor fd, smesh.faces()){
       std::cout << smesh.halfedge(fd) << std::endl;
+      std::vector<unsigned> verticesIds;
       facesSizes[i_face] = 0;
       BOOST_FOREACH(vertex_descriptor vd, vertices_around_face(smesh.halfedge(fd), smesh)){
         //std::cout << vd << std::endl;
@@ -172,7 +172,7 @@ MeshT* intersectPolyhedra(Polyhedron P1, Polyhedron P2){
 }
 
 
-int intersectionTwoPolyhedra(
+MeshT* intersectionTwoPolyhedra(
   double* vertices1,
   size_t nvertices1,
   int* faces1,
@@ -187,7 +187,7 @@ int intersectionTwoPolyhedra(
   Polyhedron P1 = buildPolyhedron(vertices1, nvertices1, faces1, facesizes1, nfaces1);
   Polyhedron P2 = buildPolyhedron(vertices2, nvertices2, faces2, facesizes2, nfaces2);
   MeshT* mesh = intersectPolyhedra(P1, P2);
-  return 0;
+  return mesh;
 }
 
 }
