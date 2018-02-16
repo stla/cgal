@@ -2,7 +2,7 @@
 {-# LANGUAGE CPP                      #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
 module Mesh
-  (c_polyhedraIntersection, cMeshToMesh)
+  (c_polyhedraIntersection, cMeshToMesh, c_convexParts)
   where
 import           Control.Monad      ((<$!>), (=<<))
 import qualified Data.IntMap.Strict as IM
@@ -138,3 +138,7 @@ cMeshToMesh cmesh = do
 foreign import ccall unsafe "intersectionTwoPolyhedra" c_polyhedraIntersection
   :: Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize
   -> Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize -> IO (Ptr CMesh)
+
+foreign import ccall unsafe "convexParts" c_convexParts
+  :: Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize -> Ptr CSize
+  -> IO (Ptr CMesh)
