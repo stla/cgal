@@ -18,6 +18,7 @@ library
                      , Types
                      , Mesh
   build-depends:       base >= 4.7 && < 5
+                     , containers
   include-dirs:        cpp
   C-sources:           cpp/intersection.cpp
                      , cpp/utils.cpp
@@ -38,6 +39,7 @@ executable cgal
   build-depends:       base >= 4.7 && < 5.0
                      , cgal
                      , pretty-show
+                     , containers
   main-is:             Main.hs
 
 source-repository head

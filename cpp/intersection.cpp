@@ -17,7 +17,7 @@
 #include <CGAL/boost/graph/convert_nef_polyhedron_to_polygon_mesh.h>
 
 #include <CGAL/Gmpq.h>
-#include <CGAL/Gmpz.h>
+// #include <CGAL/Gmpz.h>
 
 extern "C"
 {
@@ -32,13 +32,9 @@ typedef CGAL::Nef_polyhedron_3<Kernel>                    Nef_polyhedron;
 
 typedef Surface_mesh::Vertex_index                        vertex_descriptor;
 typedef Surface_mesh::Face_index                          face_descriptor;
+typedef Surface_mesh::Edge_index                          edge_descriptor;
 
 double gmpq2double(CGAL::Gmpq r){
-  // CGAL::Gmpz p = r.numerator();
-  // CGAL::Gmpz q = r.denominator();
-  // double pdbl = p.to_double();
-  // double qdbl = q.to_double();
-  // return pdbl/qdbl;
   return r.numerator().to_double()/r.denominator().to_double();
 }
 
@@ -115,6 +111,19 @@ MeshT* intersectPolyhedra(Polyhedron P1, Polyhedron P2){
   /* surface mesh */
   Surface_mesh smesh;
   CGAL::convert_nef_polyhedron_to_polygon_mesh(nef, smesh);
+  /* edges */
+  printf("Number of edges: %d\n", smesh.number_of_edges());
+  unsigned** edges = (unsigned**)malloc(smesh.number_of_edges() * sizeof(unsigned*));
+  std::cout << "Iterate over edges\n";
+  {
+    unsigned i_edge = 0;
+    BOOST_FOREACH(edge_descriptor ed, smesh.edges()){
+      edges[i_edge] = (unsigned*)malloc(2 * sizeof(unsigned));
+      edges[i_edge][0] = source(ed,smesh);
+      edges[i_edge][1] = target(ed,smesh);
+      i_edge++;
+    }
+  }
   /* vertices */
   printf("Number of vertices: %d\n", smesh.number_of_vertices());
   VertexT* vertices = (VertexT*)malloc(smesh.number_of_vertices() * sizeof(VertexT));
@@ -126,11 +135,6 @@ MeshT* intersectPolyhedra(Polyhedron P1, Polyhedron P2){
       vertices[i_vertex].point = (double*)malloc(3 * sizeof(double));
       for(unsigned k=0; k < 3; k++){
         vertices[i_vertex].point[k] = gmpq2double(smesh.point(vd)[k].exact());
-        // CGAL::Gmpz p = smesh.point(vd)[k].exact().numerator();
-        // CGAL::Gmpz q = smesh.point(vd)[k].exact().denominator();
-        // double pdbl = p.to_double();
-        // double qdbl = q.to_double();
-        // vertices[i_vertex].point[k] = pdbl/qdbl;
       }
       i_vertex++;
     } // smesh.point(vd) is a vector: smesh.point(vd)[0] gives first component; no...
@@ -168,6 +172,8 @@ MeshT* intersectPolyhedra(Polyhedron P1, Polyhedron P2){
   out->faces = faces;
   out->faceSizes = facesSizes;
   out->nfaces = smesh.number_of_faces();
+  out->edges = edges;
+  out->nedges = smesh.number_of_edges();
   return out;
 }
 

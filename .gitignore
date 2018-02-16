@@ -21,3 +21,4 @@ cabal.project.local
 *.dll
 *.json
 *.off
+tmp.txt

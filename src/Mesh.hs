@@ -8,8 +8,7 @@ import           Control.Monad       ((<$!>))
 import           Types
 import           Foreign
 import           Foreign.C.Types
-
-
+import qualified Data.IntMap.Strict as IM
 
 data CVertex = CVertex {
   __point :: Ptr CDouble
@@ -115,7 +114,7 @@ cMeshToMesh cmesh = do
   faces <- peekArray nfaces (__faces cmesh)
   vertices' <- mapM cVertexToVertex3 vertices
   faces' <- mapM cFaceToFace faces
-  return $ Mesh { _vertices = vertices'
+  return $ Mesh { _vertices = IM.fromAscList (zip [0 .. nvertices-1] vertices')
                 , _faces = faces' }
 
 foreign import ccall unsafe "intersectionTwoPolyhedra" c_polyhedraIntersection

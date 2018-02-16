@@ -13,4 +13,6 @@ typedef struct Mesh {
   FaceT* faces;
   unsigned* faceSizes;
   unsigned nfaces;
+  unsigned** edges;
+  unsigned nedges;
 } MeshT;
