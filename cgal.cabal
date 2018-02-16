@@ -21,7 +21,7 @@ library
   build-depends:       base >= 4.7 && < 5
                      , containers
   include-dirs:        cpp
-  C-sources:           cpp/intersection.cpp
+  C-sources:           cpp/cgal.cpp
                      , cpp/utils.cpp
   extra-libraries:     stdc++
                      , CGAL

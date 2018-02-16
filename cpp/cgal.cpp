@@ -3,36 +3,39 @@
 #include <vector>
 #endif
 #include <cstdlib> // to use malloc
-#include "intersection.hpp"
+#include "cgal.hpp"
 #include "utils.hpp"
 #include <fstream>
-//#include <CGAL/Simple_cartesian.h>
+
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Polyhedron_incremental_builder_3.h>
 #include <CGAL/Polyhedron_3.h>
 #include <CGAL/IO/Polyhedron_iostream.h>
-
 #include <CGAL/Nef_polyhedron_3.h>
 #include <CGAL/Surface_mesh.h>
 #include <CGAL/boost/graph/convert_nef_polyhedron_to_polygon_mesh.h>
-
 #include <CGAL/Gmpq.h>
-// #include <CGAL/Gmpz.h>
+
+#include <CGAL/Nef_3/SNC_indexed_items.h>
+#include <CGAL/convex_decomposition_3.h>
+#include <list>
+
 
 extern "C"
 {
 
-//typedef CGAL::Simple_cartesian<double>     Kernel;
 typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
 typedef CGAL::Polyhedron_3<Kernel>                        Polyhedron;
 typedef Polyhedron::HalfedgeDS                            HalfedgeDS;
-
 typedef CGAL::Surface_mesh<Kernel::Point_3>               Surface_mesh;
-typedef CGAL::Nef_polyhedron_3<Kernel>                    Nef_polyhedron;
-
+//typedef CGAL::Nef_polyhedron_3<Kernel>                    Nef_polyhedron;
 typedef Surface_mesh::Vertex_index                        vertex_descriptor;
 typedef Surface_mesh::Face_index                          face_descriptor;
 typedef Surface_mesh::Edge_index                          edge_descriptor;
+
+typedef CGAL::Nef_polyhedron_3<Kernel, CGAL::SNC_indexed_items> Nef_polyhedron;
+typedef Nef_polyhedron::Volume_const_iterator Volume_const_iterator;
+
 
 double gmpq2double(CGAL::Gmpq r){
   return r.numerator().to_double()/r.denominator().to_double();
@@ -183,70 +186,6 @@ MeshT* intersectPolyhedra(Polyhedron P1, Polyhedron P2){
   /* output */
   *out = surfacemeshToMesh(smesh);
   return out;
-  // /* edges */
-  // printf("Number of edges: %d\n", smesh.number_of_edges());
-  // unsigned** edges = (unsigned**)malloc(smesh.number_of_edges() * sizeof(unsigned*));
-  // std::cout << "Iterate over edges\n";
-  // {
-  //   unsigned i_edge = 0;
-  //   BOOST_FOREACH(edge_descriptor ed, smesh.edges()){
-  //     edges[i_edge] = (unsigned*)malloc(2 * sizeof(unsigned));
-  //     edges[i_edge][0] = source(ed,smesh);
-  //     edges[i_edge][1] = target(ed,smesh);
-  //     i_edge++;
-  //   }
-  // }
-  // /* vertices */
-  // printf("Number of vertices: %d\n", smesh.number_of_vertices());
-  // VertexT* vertices = (VertexT*)malloc(smesh.number_of_vertices() * sizeof(VertexT));
-  // std::cout << "Iterate over vertices\n";
-  // {
-  //   unsigned i_vertex = 0;
-  //   BOOST_FOREACH(vertex_descriptor vd, smesh.vertices()){
-  //     std::cout << smesh.point(vd) << std::endl;
-  //     vertices[i_vertex].point = (double*)malloc(3 * sizeof(double));
-  //     for(unsigned k=0; k < 3; k++){
-  //       vertices[i_vertex].point[k] = gmpq2double(smesh.point(vd)[k].exact());
-  //     }
-  //     i_vertex++;
-  //   } // smesh.point(vd) is a vector: smesh.point(vd)[0] gives first component; no...
-  // }
-  // /* faces */
-  // printf("Number of faces: %d\n", smesh.number_of_faces());
-  // FaceT* faces = new FaceT[smesh.number_of_faces()];
-  // unsigned* facesSizes = (unsigned*)malloc(smesh.number_of_faces() * sizeof(unsigned));
-  // std::cout << "Iterate over faces\n";
-  // {
-  //   unsigned i_face = 0;
-  //   BOOST_FOREACH(face_descriptor fd, smesh.faces()){
-  //     std::cout << smesh.halfedge(fd) << std::endl;
-  //     std::vector<unsigned> verticesIds;
-  //     facesSizes[i_face] = 0;
-  //     BOOST_FOREACH(vertex_descriptor vd, vertices_around_face(smesh.halfedge(fd), smesh)){
-  //       //std::cout << vd << std::endl;
-  //       printf("vertex: %u\n", vd);
-  //       verticesIds.push_back(vd);
-  //       facesSizes[i_face]++;
-  //     }
-  //     faces[i_face].verticesIds = uvector2array(verticesIds);
-  //     faces[i_face].nvertices = facesSizes[i_face];
-  //     i_face++;
-  //   }
-  // }
-  // /* write OFF file */
-  // std::ofstream outfile;
-  // outfile.open("intersection.off");
-  // outfile << smesh;
-  // outfile.close();
-  // /* output mesh */
-  // out->vertices = vertices;
-  // out->nvertices = smesh.number_of_vertices();
-  // out->faces = faces;
-  // out->faceSizes = facesSizes;
-  // out->nfaces = smesh.number_of_faces();
-  // out->edges = edges;
-  // out->nedges = smesh.number_of_edges();
-  // return out;
 }
 
 
@@ -266,6 +205,54 @@ MeshT* intersectionTwoPolyhedra(
   Polyhedron P2 = buildPolyhedron(vertices2, nvertices2, faces2, facesizes2, nfaces2);
   MeshT* mesh = intersectPolyhedra(P1, P2);
   return mesh;
+}
+
+Surface_mesh polyhedron2surfacemesh(Polyhedron P){
+    Nef_polyhedron nef(P);
+    Surface_mesh smesh;
+    CGAL::convert_nef_polyhedron_to_polygon_mesh(nef, smesh);
+    return smesh;
+}
+
+MeshT* convexParts(
+  double* vertices,
+  size_t nvertices,
+  int* faces,
+  int* facesizes,
+  size_t nfaces,
+  size_t* nparts)
+{
+  Polyhedron P0 = buildPolyhedron(vertices, nvertices, faces, facesizes, nfaces);
+  // TODO: check P0 is closed...
+  Nef_polyhedron N(P0);
+  if(N.is_simple()) {
+    N.convert_to_polyhedron(P0);
+  }else{
+    std::cerr << "N is not a 2-manifold." << std::endl;
+  }
+  CGAL::convex_decomposition_3(N);
+  std::list<Polyhedron> convex_parts;
+  // the first volume is the outer volume, which is ignored in the decomposition
+  Volume_const_iterator ci = ++N.volumes_begin();
+  for( ; ci != N.volumes_end(); ++ci){
+    if(ci->mark()) {
+      Polyhedron P;
+      N.convert_inner_shell_to_polyhedron(ci->shells_begin(), P);
+      convex_parts.push_back(P);
+      // Surface_mesh sm = polyhedron2surfacemesh(P);
+      // std::cout << sm;
+    }
+  }
+  *nparts = convex_parts.size();
+  std::cout << "decomposition into " << *nparts << " convex parts " << std::endl;
+  /* output */
+  MeshT* out = (MeshT*)malloc(*nparts * sizeof(MeshT));
+  size_t i = 0;
+  for(Polyhedron polyh : convex_parts){
+    out[i] = surfacemeshToMesh(polyhedron2surfacemesh(polyh));
+    i++;
+  }
+  return out;
 }
 
 }

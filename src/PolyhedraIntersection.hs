@@ -4,11 +4,18 @@ import           Foreign.C.Types
 import           Foreign.Marshal.Alloc (free, mallocBytes)
 import           Foreign.Marshal.Array (pokeArray)
 import           Foreign.Storable      (peek, sizeOf)
+import           Helpers               (unmakeMesh)
 import           Mesh
 import           Types
 
-polyhedraIntersection :: ([[Double]],[[Int]]) -> ([[Double]],[[Int]]) -> IO Mesh
-polyhedraIntersection (vertices1, faces1) (vertices2, faces2) = do
+polyhedraIntersection :: Mesh -> Mesh -> IO Mesh
+polyhedraIntersection mesh1 mesh2 = do
+  let mesh1' = unmakeMesh mesh1
+      mesh2' = unmakeMesh mesh2
+  polyhedraIntersection_ mesh1' mesh2'
+
+polyhedraIntersection_ :: ([[Double]],[[Int]]) -> ([[Double]],[[Int]]) -> IO Mesh
+polyhedraIntersection_ (vertices1, faces1) (vertices2, faces2) = do
   let nvertices1 = length vertices1
       nfaces1 = length faces1
       facesizes1 = map length faces1
@@ -93,4 +100,4 @@ test = do
                 , [ 11 , 7 , 5 ]
                 , [ 3 , 7 , 11 ]
                 ]
-  polyhedraIntersection (vs1, faces1) (vs2, faces2)
+  polyhedraIntersection_ (vs1, faces1) (vs2, faces2)

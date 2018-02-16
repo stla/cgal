@@ -1,7 +1,7 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Mesh
-  (c_polyhedraIntersection, cMeshToMesh)
+  (c_polyhedraIntersection, cMeshToMesh, c_convexParts)
   where
 import           Control.Monad       ((<$!>), (=<<))
 import           Types
@@ -9,7 +9,7 @@ import           Foreign
 import           Foreign.C.Types
 import qualified Data.IntMap.Strict as IM
 
-#include "intersection.hpp"
+#include "cgal.hpp"
 
 data CVertex = CVertex {
   __point :: Ptr CDouble
@@ -113,3 +113,7 @@ cMeshToMesh cmesh = do
 foreign import ccall unsafe "intersectionTwoPolyhedra" c_polyhedraIntersection
   :: Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize
   -> Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize -> IO (Ptr CMesh)
+
+foreign import ccall unsafe "convexParts" c_convexParts
+  :: Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize -> Ptr CSize
+  -> IO (Ptr CMesh)

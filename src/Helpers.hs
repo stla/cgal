@@ -16,3 +16,12 @@ makeMesh vertices faces =
   faces' = map toFace faces
     where
     toFace idxs = Face { _verticesIds = idxs }
+
+unmakeMesh :: Mesh -> ([[Double]], [[Int]])
+unmakeMesh mesh = (vertices, faces)
+  where
+  vertices' = IM.elems (_vertices mesh)
+  vertices = map fromVertex3 vertices'
+    where
+    fromVertex3 (Vertex3 x y z) = [x,y,z]
+  faces = map _verticesIds (_faces mesh)

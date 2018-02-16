@@ -4,7 +4,7 @@
 #endif
 #ifndef __STDDEF__
 #define __STDDEF__
-#include <stddef.h>
+#include <stddef.h> // to use size_t
 #endif
 
 extern "C"
