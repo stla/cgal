@@ -3,6 +3,7 @@
 #include <vector>
 #endif
 #include <cstdlib> // to use malloc
+#include <algorithm> // to use std::find
 #include "cgal.hpp"
 #include "utils.hpp"
 #include <fstream>
@@ -38,8 +39,11 @@ typedef Nef_polyhedron::Volume_const_iterator Volume_const_iterator;
 
 
 double gmpq2double(CGAL::Gmpq r){
-  return r.numerator().to_double()/r.denominator().to_double();
+  //return r.numerator().to_double()/r.denominator().to_double();
+  return r.to_double();
 }
+
+
 
 // A modifier creating a polyhedron with the incremental builder.
 class polyhedron_builder : public CGAL::Modifier_base<HalfedgeDS> {
@@ -57,11 +61,16 @@ public:
     typedef typename Vertex::Point        Point;
     /* create a cgal incremental builder */
     CGAL::Polyhedron_incremental_builder_3<HalfedgeDS> B( hds, true);
-    B.begin_surface( coords.size()/3, faces.size()/3 );
+    B.begin_surface( coords.size()/3, facesizes.size()); // faces.size /3 ?
       /* add the polyhedron vertices */
       for(int i=0; i<(int)coords.size(); i+=3){
         B.add_vertex( Point( coords[i+0], coords[i+1], coords[i+2] ) );
       }
+      // for(int i=0; i<(int)coords.size()/3; i++){
+      //   if(std::find(faces.begin(), faces.end(), i) != faces.end()) { // checks if i belongs to faces - https://stackoverflow.com/questions/3450860/check-if-a-stdvector-contains-a-certain-object
+      //     B.add_vertex( Point( coords[3*i+0], coords[3*i+1], coords[3*i+2] ) );
+      //   }
+      // }
       /* add the polyhedron faces */
       int i=0;
       for(int k=0; k<(int)facesizes.size(); k++){
@@ -171,9 +180,12 @@ MeshT surfacemeshToMesh(Surface_mesh smesh){
 MeshT* intersectPolyhedra(Polyhedron P1, Polyhedron P2){
   MeshT* out = (MeshT*)malloc(sizeof(MeshT));
   /* convert polyhedra to nefs */
+  printf("make nef1\n");
   Nef_polyhedron nef1(P1);
+  printf("make nef2\n");
   Nef_polyhedron nef2(P2);
   /* compute the intersection */
+  printf("make nefs intersection\n");
   Nef_polyhedron nef = nef1*nef2;
   /* surface mesh */
   Surface_mesh smesh;
@@ -201,8 +213,17 @@ MeshT* intersectionTwoPolyhedra(
   int* facesizes2,
   size_t nfaces2)
 {
+  printf("build P1\n");
   Polyhedron P1 = buildPolyhedron(vertices1, nvertices1, faces1, facesizes1, nfaces1);
+  printf("P1 is closed: %u\n", P1.is_closed());
+  printf("P1 is valid: %u\n", P1.is_valid());
+  std::cout << P1;
+  printf("build P2\n");
   Polyhedron P2 = buildPolyhedron(vertices2, nvertices2, faces2, facesizes2, nfaces2);
+  printf("P2 is closed: %u\n", P2.is_closed());
+  printf("P2 is valid: %u\n", P2.is_valid());
+  std::cout << P2;
+  printf("run intersection\n");
   MeshT* mesh = intersectPolyhedra(P1, P2);
   return mesh;
 }

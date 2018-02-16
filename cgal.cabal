@@ -21,6 +21,7 @@ library
                      , ConvexParts
   build-depends:       base >= 4.7 && < 5
                      , containers
+                     , permutation
   include-dirs:        cpp
   C-sources:           cpp/cgal.cpp
                      , cpp/utils.cpp
@@ -29,20 +30,31 @@ library
                      , CGAL_Core
                      , mpfr
                      , gmp
-  ghc-options:         -pgml g++
+  ghc-options:         -Wall -pgml g++
   other-extensions:    CPP
                      , ForeignFunctionInterface
   cc-options:          -fPIC
   default-language:    Haskell2010
 
-executable cgal
-  ghc-options:         -Wall -fllvm
-  default-language:    Haskell2010
-  build-depends:       base >= 4.7 && < 5.0
+executable testintersection
+  hs-source-dirs:      src-exe
+  main-is:             MainIntersection.hs
+  ghc-options:         -O2 -optc-fpermissive -optc-fexceptions -Wall
+  build-depends:       base >= 4.7 && < 5
                      , cgal
                      , pretty-show
                      , containers
-  main-is:             Main.hs
+  default-language:    Haskell2010
+
+executable testconvexparts
+  hs-source-dirs:      src-exe
+  main-is:             MainConvexParts.hs
+  ghc-options:         -fllvm
+  build-depends:       base >= 4.7 && < 5
+                     , cgal
+                     , pretty-show
+                     , containers
+  default-language:    Haskell2010
 
 source-repository head
   type:     git

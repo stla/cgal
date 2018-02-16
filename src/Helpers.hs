@@ -3,8 +3,8 @@ module Helpers
 import qualified Data.IntMap.Strict as IM
 import           Types
 
-makeMesh :: [[Double]] -> [[Int]] -> Mesh
-makeMesh vertices faces =
+makeMesh :: ([[Double]], [[Int]]) -> Mesh
+makeMesh (vertices, faces) =
   Mesh {  _vertices = vertex3map
         , _faces = faces'
         , _edges = Nothing }
