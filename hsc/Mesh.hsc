@@ -3,7 +3,7 @@
 module Mesh
   (c_polyhedraIntersection, cMeshToMesh)
   where
-import           Control.Monad       ((<$!>))
+import           Control.Monad       ((<$!>), (=<<))
 import           Types
 import           Foreign
 import           Foreign.C.Types
@@ -61,6 +61,8 @@ data CMesh = CMesh {
   , __faces :: Ptr CFace
   , __faceSizes :: Ptr CUInt -- inutile
   , __nfaces :: CUInt
+  , __edges :: Ptr (Ptr CUInt)
+  , __nedges :: CUInt
 }
 
 instance Storable CMesh where
@@ -72,29 +74,41 @@ instance Storable CMesh where
       fs <- #{peek MeshT, faces} ptr
       fss <- #{peek MeshT, faceSizes} ptr
       nf <- #{peek MeshT, nfaces} ptr
+      es <- #{peek MeshT, edges} ptr
+      ne <- #{peek MeshT, nedges} ptr
       return CMesh { __vertices = vs
                    , __nvertices' = nvs
                    , __faces = fs
                    , __faceSizes = fss
-                   , __nfaces = nf }
-    poke ptr (CMesh r1 r2 r3 r4 r5)
+                   , __nfaces = nf
+                   , __edges = es
+                   , __nedges = ne }
+    poke ptr (CMesh r1 r2 r3 r4 r5 r6 r7)
       = do
         #{poke MeshT, vertices} ptr r1
         #{poke MeshT, nvertices} ptr r2
         #{poke MeshT, faces} ptr r3
         #{poke MeshT, faceSizes} ptr r4
         #{poke MeshT, nfaces} ptr r5
+        #{poke MeshT, edges} ptr r6
+        #{poke MeshT, nedges} ptr r7
 
 cMeshToMesh :: CMesh -> IO Mesh
 cMeshToMesh cmesh = do
   let nvertices = fromIntegral $ __nvertices' cmesh
       nfaces = fromIntegral $ __nfaces cmesh
+      nedges = fromIntegral $ __nedges cmesh
   vertices <- peekArray nvertices (__vertices cmesh)
   faces <- peekArray nfaces (__faces cmesh)
   vertices' <- mapM cVertexToVertex3 vertices
   faces' <- mapM cFaceToFace faces
+  edges <- (<$!>) (map (\x -> Pair (fromIntegral (x!!0)) (fromIntegral (x!!1))))
+                  ((=<<) (mapM (peekArray 2))
+                         (peekArray nedges (__edges cmesh)))
   return $ Mesh { _vertices = IM.fromAscList (zip [0 .. nvertices-1] vertices')
-                , _faces = faces' }
+                , _faces = faces'
+                , _edges = edges}
+                
 
 foreign import ccall unsafe "intersectionTwoPolyhedra" c_polyhedraIntersection
   :: Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize
