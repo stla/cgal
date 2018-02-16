@@ -132,7 +132,7 @@ cMeshToMesh cmesh = do
                          (peekArray nedges (__edges cmesh)))
   return $ Mesh { _vertices = IM.fromAscList (zip [0 .. nvertices-1] vertices')
                 , _faces = faces'
-                , _edges = edges}
+                , _edges = Just edges}
 
 
 foreign import ccall unsafe "intersectionTwoPolyhedra" c_polyhedraIntersection

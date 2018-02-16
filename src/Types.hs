@@ -17,5 +17,5 @@ instance Eq IndexPair where
 data Mesh = Mesh {
     _vertices :: IntMap Vertex3
   , _faces    :: [Face]
-  , _edges    :: [IndexPair]
+  , _edges    :: Maybe [IndexPair]
 } deriving Show
