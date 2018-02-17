@@ -10,15 +10,28 @@ build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
 
+flag exe
+  description:
+    Build the executables.
+  default: False
+flag exe-intersection
+  default: False
+flag exe-union
+  default: False
+flag exe-convexparts
+  default: False
+
 library
   hs-source-dirs:      src
   exposed-modules:     Lib
 --                     , Polyhedron2OFF
                      , PolyhedraIntersection
+                     , PolyhedraUnion
                      , Types
                      , Mesh
                      , Helpers
                      , ConvexParts
+                     , Examples
   build-depends:       base >= 4.7 && < 5
                      , containers
                      , permutation
@@ -37,9 +50,27 @@ library
   default-language:    Haskell2010
 
 executable testintersection
+  if flag(exe) || flag(exe-intersection)
+    buildable:         True
+  else
+    buildable:         False
   hs-source-dirs:      src-exe
   main-is:             MainIntersection.hs
-  ghc-options:         -O2 -optc-fpermissive -optc-fexceptions -Wall
+  ghc-options:         -O2 -Wall
+  build-depends:       base >= 4.7 && < 5
+                     , cgal
+                     , pretty-show
+                     , containers
+  default-language:    Haskell2010
+
+executable testunion
+  if flag(exe) || flag(exe-union)
+    buildable:         True
+  else
+    buildable:         False
+  hs-source-dirs:      src-exe
+  main-is:             MainUnion.hs
+  ghc-options:         -O2 -Wall
   build-depends:       base >= 4.7 && < 5
                      , cgal
                      , pretty-show
@@ -47,6 +78,10 @@ executable testintersection
   default-language:    Haskell2010
 
 executable testconvexparts
+  if flag(exe) || flag(exe-convexparts)
+    buildable:         True
+  else
+    buildable:         False
   hs-source-dirs:      src-exe
   main-is:             MainConvexParts.hs
   ghc-options:         -fllvm

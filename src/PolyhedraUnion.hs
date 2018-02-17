@@ -1,4 +1,4 @@
-module PolyhedraIntersection
+module PolyhedraUnion
   where
 import           Foreign.C.Types
 import           Foreign.Marshal.Alloc (free, mallocBytes)
@@ -8,14 +8,14 @@ import           Helpers               (unmakeMesh)
 import           Mesh
 import           Types
 
-polyhedraIntersection :: Mesh -> Mesh -> IO Mesh
-polyhedraIntersection mesh1 mesh2 = do
+polyhedraUnion :: Mesh -> Mesh -> IO Mesh
+polyhedraUnion mesh1 mesh2 = do
   let mesh1' = unmakeMesh mesh1
       mesh2' = unmakeMesh mesh2
-  polyhedraIntersection_ mesh1' mesh2'
+  polyhedraUnion_ mesh1' mesh2'
 
-polyhedraIntersection_ :: ([[Double]],[[Int]]) -> ([[Double]],[[Int]]) -> IO Mesh
-polyhedraIntersection_ (vertices1, faces1) (vertices2, faces2) = do
+polyhedraUnion_ :: ([[Double]],[[Int]]) -> ([[Double]],[[Int]]) -> IO Mesh
+polyhedraUnion_ (vertices1, faces1) (vertices2, faces2) = do
   let nvertices1 = length vertices1
       nfaces1 = length faces1
       facesizes1 = map length faces1
@@ -36,11 +36,10 @@ polyhedraIntersection_ (vertices1, faces1) (vertices2, faces2) = do
   pokeArray faces2Ptr (concatMap (map fromIntegral) faces2)
   facesizes2Ptr <- mallocBytes (nfaces2 * sizeOf (undefined :: CInt))
   pokeArray facesizes2Ptr (map fromIntegral facesizes2)
-  putStrLn "run C++"
-  meshPtr <- c_polyhedraIntersection vertices1Ptr (fromIntegral nvertices1) faces1Ptr
-                                     facesizes1Ptr (fromIntegral nfaces1)
-                                     vertices2Ptr (fromIntegral nvertices2) faces2Ptr
-                                     facesizes2Ptr (fromIntegral nfaces2)
+  meshPtr <- c_polyhedraUnion vertices1Ptr (fromIntegral nvertices1) faces1Ptr
+                              facesizes1Ptr (fromIntegral nfaces1)
+                              vertices2Ptr (fromIntegral nvertices2) faces2Ptr
+                              facesizes2Ptr (fromIntegral nfaces2)
   cmesh <- peek meshPtr
   free vertices1Ptr
   free faces1Ptr
