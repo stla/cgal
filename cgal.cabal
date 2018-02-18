@@ -23,8 +23,7 @@ flag exe-convexparts
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Lib
---                     , Polyhedron2OFF
+  exposed-modules:     Polyhedron2OFF
                      , PolyhedraIntersection
                      , PolyhedraUnion
                      , Types

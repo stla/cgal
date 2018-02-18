@@ -330,4 +330,34 @@ MeshT* convexParts(
   return out;
 }
 
+
+void polyhedron2off(
+  double* vertices,
+  size_t nvertices,
+  int* faces,
+  int* facesizes,
+  size_t nfaces,
+  char* outfile)
+{
+  /* calculate length of `faces`*/
+  size_t l = 0;
+  for(size_t i=0; i < nfaces; i++){
+    l += facesizes[i];
+  }
+  /* make vectors */
+  std::vector<double> vs = darray2vector(vertices, 3*nvertices);
+  std::vector<int> fs = iarray2vector(faces, l);
+  std::vector<int> fzs = iarray2vector(facesizes, nfaces);
+  /* build the polyhedron */
+  Polyhedron P;
+  polyhedron_builder builder(vs, fs, fzs);
+  P.delegate( builder );
+  /* write the polyhedron out as a .OFF file */
+  std::ofstream os(outfile);
+  os << P;
+  os.close();
+}
+
+
+
 }
