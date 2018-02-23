@@ -3,7 +3,7 @@
 #include <vector>
 #endif
 #include <cstdlib> // to use malloc
-//#include <algorithm> // to use std::find
+#include <algorithm> // to use std::find
 #include "cgal.hpp"
 #include "utils.hpp"
 #include <fstream>
@@ -61,7 +61,8 @@ public:
     typedef typename Vertex::Point        Point;
     /* create a cgal incremental builder */
     CGAL::Polyhedron_incremental_builder_3<HalfedgeDS> B( hds, true);
-    B.begin_surface( coords.size()/3, facesizes.size()); // faces.size /3 ?
+    // B.begin_surface( coords.size()/3, facesizes.size()); // faces.size /3 ?
+    B.begin_surface( coords.size()/3, 3*facesizes.size()); // faces.size /3 ?
       /* add the polyhedron vertices */
       for(int i=0; i<(int)coords.size(); i+=3){
         B.add_vertex( Point( coords[i+0], coords[i+1], coords[i+2] ) );
