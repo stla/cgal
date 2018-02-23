@@ -10,6 +10,7 @@
 extern "C"
 {
 
+std::vector<unsigned> uarray2vector(unsigned*, size_t);
 std::vector<int> iarray2vector(int*, size_t);
 std::vector<double> darray2vector(double*, size_t);
 double* dvector2array(std::vector<double>);

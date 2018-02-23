@@ -1,3 +1,11 @@
+typedef struct polyhedron {
+  double* vertices;
+  size_t nvertices;
+  int* faces;
+  int* facesizes;
+  size_t nfaces;
+} polyhedronT;
+
 typedef struct Vertex {
   double* point;
 } VertexT;

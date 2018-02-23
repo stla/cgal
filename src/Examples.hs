@@ -218,6 +218,7 @@ cubes'' =
     )
   ]
 
+-- -- five cubes triangulated -- --
 cubeVertices1 :: [[Double]]
 cubeVertices1 =
   [ [ 0.0 , 0.6180339887498949 , 1.618033988749895 ]
@@ -244,7 +245,6 @@ cubeTriFaces1 = [ [ 4 , 3 , 2 ]
                 , [ 5 , 4 , 2 ]
                 , [ 5 , 2 , 0 ]
                 ]
-
 
 cubeVertices2 :: [[Double]]
 cubeVertices2 =
@@ -273,7 +273,6 @@ cubeTriFaces2 = [ [ 0 , 6 , 7 ]
                 , [ 2 , 5 , 6 ]
                 ]
 
-
 cubeVertices3 :: [[Double]]
 cubeVertices3 =
   [ [ -0.6180339887498949 , 1.618033988749895 , 0.0 ]
@@ -300,7 +299,6 @@ cubeTriFaces3 = [ [ 5 , 4 , 3 ]
                 , [ 4 , 5 , 7 ]
                 , [ 1 , 4 , 7 ]
                 ]
-
 
 cubeVertices4 :: [[Double]]
 cubeVertices4 =
@@ -329,7 +327,6 @@ cubeTriFaces4 = [ [ 1 , 2 , 5 ]
                 , [ 7 , 6 , 4 ]
                 ]
 
-
 cubeVertices5 :: [[Double]]
 cubeVertices5 =
   [ [ 0.0 , 0.6180339887498949 , 1.618033988749895 ]
@@ -356,3 +353,101 @@ cubeTriFaces5 = [ [ 4 , 5 , 6 ]
                 , [ 2 , 4 , 6 ]
                 , [ 4 , 2 , 0 ]
                 ]
+
+-- -- great stellated dodecahedron -- --
+gsdVertices :: [[Double]]
+gsdVertices = [ [0, 0, (1+sqrt 5 )/sqrt 3 *3/2],
+                [(1+sqrt 5 )/sqrt 3 , 0, -(1+sqrt 5 )*sqrt(5/3)/2],
+                [-(1+sqrt 5 )/sqrt 3 /2, (1+sqrt 5 )/2, -(1+sqrt 5 )*sqrt(5/3)/2],
+                [-(1+sqrt 5 )/sqrt 3 /2, -(1+sqrt 5 )/2, -(1+sqrt 5 )*sqrt(5/3)/2],
+                [-(1+sqrt 5 )*sqrt(5/3)/2, (1+sqrt 5 )/2, (1+sqrt 5 )/sqrt 3 /2],
+                [-(1+sqrt 5 )*sqrt(5/3)/2, -(1+sqrt 5 )/2, (1+sqrt 5 )/sqrt 3 /2],
+                [-1/phi/sqrt 3 , -(sqrt 5 +3)/2, (1+sqrt 5 )/sqrt 3 /2],
+                [(2+sqrt 5 )/sqrt 3 , -1, (1+sqrt 5 )/sqrt 3 /2],
+                [(2+sqrt 5 )/sqrt 3 , 1, (1+sqrt 5 )/sqrt 3 /2],
+                [-1/phi/sqrt 3 , (sqrt 5 +3)/2, (1+sqrt 5 )/sqrt 3 /2],
+                [1/phi/sqrt 3 , -(sqrt 5 +3)/2, -(1+sqrt 5 )/sqrt 3 /2],
+                [1/phi/sqrt 3 , (sqrt 5 +3)/2, -(1+sqrt 5 )/sqrt 3 /2],
+                [(1+sqrt 5 )*sqrt(5/3)/2, (1+sqrt 5 )/2, -(1+sqrt 5 )/sqrt 3 /2],
+                [-(2+sqrt 5 )/sqrt 3 , -1, -(1+sqrt 5 )/sqrt 3 /2],
+                [-(2+sqrt 5 )/sqrt 3 , 1, -(1+sqrt 5 )/sqrt 3 /2],
+                [(1+sqrt 5 )*sqrt(5/3)/2, -(1+sqrt 5 )/2, -(1+sqrt 5 )/sqrt 3 /2],
+                [(1+sqrt 5 )/sqrt 3 /2, (1+sqrt 5 )/2, (1+sqrt 5 )*sqrt(5/3)/2],
+                [(1+sqrt 5 )/sqrt 3 /2, -(1+sqrt 5 )/2, (1+sqrt 5 )*sqrt(5/3)/2],
+                [-(1+sqrt 5 )/sqrt 3 , 0, (1+sqrt 5 )*sqrt(5/3)/2],
+                [0, 0, -(1+sqrt 5 )/sqrt 3 *3/2],
+                [1/sqrt 15 , 1/sqrt 5 , (3/sqrt 5 -1)/sqrt 3 /2],
+                [-2/sqrt 15 , 0, (3/sqrt 5 -1)/sqrt 3 /2],
+                [1/sqrt 15 , -1/sqrt 5 , (3/sqrt 5 -1)/sqrt 3 /2],
+                [-(sqrt 5 -1)/sqrt 15 , 0, -(1+sqrt 5 )/2/sqrt 5 /sqrt 3 ],
+                [(sqrt 5 -1)/sqrt 15 /2, -(5-sqrt 5 )/10, -(1+sqrt 5 )/2/sqrt 5 /sqrt 3 ],
+                [(sqrt 5 -1)/sqrt 15 /2, (5-sqrt 5 )/10, -(1+sqrt 5 )/2/sqrt 5 /sqrt 3 ],
+                [-(sqrt 5 -1)/sqrt 15 /2, -(5-sqrt 5 )/10, (1+sqrt 5 )/2/sqrt 5 /sqrt 3 ],
+                [-(sqrt 5 -1)/sqrt 15 /2, (5-sqrt 5 )/10, (1+sqrt 5 )/2/sqrt 5 /sqrt 3 ],
+                [(sqrt 5 -1)/sqrt 15 , 0, (1+sqrt 5 )/2/sqrt 5 /sqrt 3 ],
+                [2/sqrt 15 , 0, -(3/sqrt 5 -1)/sqrt 3 /2],
+                [-1/sqrt 15 , 1/sqrt 5 , -(3/sqrt 5 -1)/sqrt 3 /2],
+                [-1/sqrt 15 , -1/sqrt 5 , -(3/sqrt 5 -1)/sqrt 3 /2] ]
+  where phi = (1 + sqrt 5) / 2
+
+gsdFaces :: [[Int]]
+gsdFaces = [[ 20,0,1 ] ,
+            [ 20,1,4 ] ,
+            [ 20,4,7 ] ,
+            [ 20,7,2 ] ,
+            [ 20,2,0 ] ,
+            [ 21,0,2 ] ,
+            [ 21,2,6 ] ,
+            [ 21,6,9 ] ,
+            [ 21,9,3 ] ,
+            [ 21,3,0 ] ,
+            [ 22,0,3 ] ,
+            [ 22,3,8 ] ,
+            [ 22,8,5 ] ,
+            [ 22,5,1 ] ,
+            [ 22,1,0 ] ,
+            [ 23,1,5 ] ,
+            [ 23,5,11 ] ,
+            [ 23,11,10 ] ,
+            [ 23,10,4 ] ,
+            [ 23,4,1 ] ,
+            [ 24,2,7 ] ,
+            [ 24,7,13 ] ,
+            [ 24,13,12 ] ,
+            [ 24,12,6 ] ,
+            [ 24,6,2 ] ,
+            [ 25,3,9 ] ,
+            [ 25,9,15 ] ,
+            [ 25,15,14 ] ,
+            [ 25,14,8 ] ,
+            [ 25,8,3 ] ,
+            [ 26,4,10 ] ,
+            [ 26,10,16 ] ,
+            [ 26,16,13 ] ,
+            [ 26,13,7 ] ,
+            [ 26,7,4 ] ,
+            [ 27,5,8 ] ,
+            [ 27,8,14 ] ,
+            [ 27,14,17 ] ,
+            [ 27,17,11 ] ,
+            [ 27,11,5 ] ,
+            [ 28,6,12 ] ,
+            [ 28,12,18 ] ,
+            [ 28,18,15 ] ,
+            [ 28,15,9 ] ,
+            [ 28,9,6 ] ,
+            [ 29,10,11 ] ,
+            [ 29,11,17 ] ,
+            [ 29,17,19 ] ,
+            [ 29,19,16 ] ,
+            [ 29,16,10 ] ,
+            [ 30,12,13 ] ,
+            [ 30,13,16 ] ,
+            [ 30,16,19 ] ,
+            [ 30,19,18 ] ,
+            [ 30,18,12 ] ,
+            [ 31,14,15 ] ,
+            [ 31,15,18 ] ,
+            [ 31,18,19 ] ,
+            [ 31,19,17 ] ,
+            [ 31,17,14 ]]

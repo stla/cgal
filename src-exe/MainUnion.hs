@@ -1,12 +1,19 @@
 import qualified Data.IntMap.Strict as IM
 import           Data.Maybe
 import           Examples
-import           Helpers
 import           PolyhedraUnion
 import           System.IO
 import           Text.Show.Pretty
+import           Data.List
+import           Control.Monad         (forM_)
+import           Foreign               (Ptr, alloca, new, malloc)
+import           Foreign.C.Types
+import           Foreign.Marshal.Alloc (free, mallocBytes)
+import           Foreign.Marshal.Array (peekArray, pokeArray, newArray)
+import           Foreign.Storable      (peek, poke, sizeOf)
+import           Helpers               (unmakeMesh)
+import           Mesh
 import           Types
-import Data.List
 
 approx :: RealFrac a => Int -> a -> a
 approx n x = fromInteger (round $ x * (10^n)) / (10.0^^n)
@@ -16,10 +23,55 @@ toDbl (Vertex3 x y z) = [x,y,z]
 main :: IO ()
 main = do
 
-  union <- polyhedraUnion_ (cubeVertices1, cubeTriFaces1) (cubeVertices2, cubeTriFaces2)
-  let (vs, fs) = unmakeMesh union
-  union2 <- polyhedraUnion_ (vs,fs) (cubeVertices3, cubeTriFaces3)
-  pPrint union2
+  -- vsPtr1 <- malloc
+  -- pokeArray vsPtr1 (concatMap (map realToFrac) cubeVertices1 :: [CDouble])
+  -- fsPtr1 <- malloc
+  -- pokeArray fsPtr1 (concatMap (map fromIntegral) cubeTriFaces1 :: [CInt])
+  -- fssPtr1 <- malloc
+  -- pokeArray fssPtr1 [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 :: CInt]
+  -- vsPtr2 <- malloc
+  -- pokeArray vsPtr2 (concatMap (map realToFrac) cubeVertices2 :: [CDouble])
+  -- fsPtr2 <- malloc
+  -- pokeArray fsPtr2 (concatMap (map fromIntegral) cubeTriFaces2 :: [CInt])
+  -- fssPtr2 <- malloc
+  -- pokeArray fssPtr2 [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 :: CInt]
+  -- vsPtr3 <- malloc
+  -- pokeArray vsPtr3 (concatMap (map realToFrac) cubeVertices3 :: [CDouble])
+  -- fsPtr3 <- malloc
+  -- pokeArray fsPtr3 (concatMap (map fromIntegral) cubeTriFaces3 :: [CInt])
+  -- fssPtr3 <- malloc
+  -- pokeArray fssPtr3 [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 :: CInt]
+  -- let p1 = CPolyhedron {
+  --     __vertices' = vsPtr1
+  --   , __nvertices'' = 8
+  --   , __faces' = fsPtr1
+  --   , __facesizes' = fssPtr1
+  --   , __nfaces' = 12    }
+  -- let p2 = CPolyhedron {
+  --     __vertices' = vsPtr2
+  --   , __nvertices'' = 8
+  --   , __faces' = fsPtr2
+  --   , __facesizes' = fssPtr2
+  --   , __nfaces' = 12   }
+  -- let p3 = CPolyhedron {
+  --     __vertices' = vsPtr3
+  --   , __nvertices'' = 8
+  --   , __faces' = fsPtr3
+  --   , __facesizes' = fssPtr3
+  --   , __nfaces' = 12    }
+  -- polyhPtr <- mallocBytes (3 * sizeOf (undefined :: CPolyhedron))
+  -- pokeArray polyhPtr [p1, p2, p3]
+  -- union <- c_unionNpolyhedra polyhPtr 3
+  -- u <- peek union
+  -- print u
+
+  --  ### CECI MARCHE ### --
+  union <- polyhedraUnion_ (cubeVertices3, cubeTriFaces3) (cubeVertices2, cubeTriFaces2) (cubeVertices1, cubeTriFaces1)
+  -- -- let (vs, fs) = unmakeMesh union
+  -- -- union2 <- polyhedraUnion_ (vs,fs) (cubeVertices1, cubeTriFaces1)
+  pPrint union
+  -- ###             ### --
+
   -- union <- polyhedraUnion_ (cubes''!!0) (cubes''!!1)
   -- pPrint union
   -- let (vs, fs) = unmakeMesh union

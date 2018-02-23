@@ -1,7 +1,7 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Mesh
-  (c_polyhedraIntersection, cMeshToMesh, c_convexParts, c_polyhedraUnion)
+  (c_polyhedraIntersection, cMeshToMesh, c_convexParts, c_polyhedraUnion, c_unionNpolyhedra, CPolyhedron (..))
   where
 import           Control.Monad       ((<$!>), (=<<))
 import           Types
@@ -10,6 +10,37 @@ import           Foreign.C.Types
 import qualified Data.IntMap.Strict as IM
 
 #include "cgal.hpp"
+
+data CPolyhedron = CPolyhedron {
+    __vertices' :: Ptr CDouble
+  , __nvertices'' :: CSize
+  , __faces' :: Ptr CInt
+  , __facesizes' :: Ptr CInt
+  , __nfaces' :: CSize
+}
+
+instance Storable CPolyhedron  where
+    sizeOf    __ = #{size polyhedronT }
+    alignment __ = #{alignment polyhedronT }
+    peek ptr = do
+      vertices'  <- #{peek polyhedronT , vertices} ptr
+      nvertices'  <- #{peek polyhedronT , nvertices} ptr
+      faces'  <- #{peek polyhedronT , faces} ptr
+      facesizes'  <- #{peek polyhedronT , facesizes} ptr
+      nfaces'  <- #{peek polyhedronT , nfaces} ptr
+      return CPolyhedron  {  __vertices' = vertices'
+                           , __nvertices'' = nvertices'
+                           , __faces' = faces'
+                           , __facesizes' = facesizes'
+                           , __nfaces' = nfaces' }
+    poke ptr (CPolyhedron r1 r2 r3 r4 r5)
+      = do
+        #{poke polyhedronT , vertices} ptr r1
+        #{poke polyhedronT , nvertices} ptr r2
+        #{poke polyhedronT , faces} ptr r3
+        #{poke polyhedronT , facesizes} ptr r4
+        #{poke polyhedronT , nfaces} ptr r5
+
 
 data CVertex = CVertex {
   __point :: Ptr CDouble
@@ -121,3 +152,9 @@ foreign import ccall unsafe "unionTwoPolyhedra" c_polyhedraUnion
 foreign import ccall unsafe "convexParts" c_convexParts
   :: Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize -> Ptr CSize
   -> IO (Ptr CMesh)
+
+foreign import ccall unsafe "unionNPolyhedra" c_unionNpolyhedra
+  :: Ptr CPolyhedron -> CUInt -> IO (Ptr CMesh)
+--  MeshT* unionNPolyhedra(
+--    polyhedronT* polyhedras,
+--    unsigned npolyhedras)

@@ -12,6 +12,13 @@
 extern "C"
 {
 
+std::vector<unsigned> uarray2vector(unsigned* array, size_t n){
+  std::vector<unsigned> out;
+  for(size_t i=0; i<n; i++){
+      out.push_back(array[i]);
+  }
+  return out;
+}
 std::vector<int> iarray2vector(int* array, size_t n){
   std::vector<int> out;
   for(size_t i=0; i<n; i++){
