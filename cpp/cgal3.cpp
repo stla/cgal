@@ -262,6 +262,8 @@ MeshT* unionNPolyhedra(
   printf("run unionNPolyhedra\n");
   Polyhedron* Polys = (Polyhedron*)malloc(npolyhedras * sizeof(Polyhedron));
   for(unsigned i=0; i < npolyhedras; i++){
+    printf("i: %u\n", i);
+    printf("nvertices: %Iu\n", polyhedras[i].nvertices); 
     Polys[i] = buildPolyhedron(polyhedras[i].vertices,
                                polyhedras[i].nvertices,
                                polyhedras[i].faces,
@@ -269,41 +271,41 @@ MeshT* unionNPolyhedra(
                                polyhedras[i].nfaces);
   }
   MeshT* mesh = unitePolyhedra(Polys, npolyhedras);
-  //free Polys;
+//  free Polys;
   return mesh;
 }
 
-MeshT* unionThreePolyhedra(
-  double* vertices1,
-  size_t nvertices1,
-  int* faces1,
-  int* facesizes1,
-  size_t nfaces1,
-  double* vertices2,
-  size_t nvertices2,
-  int* faces2,
-  int* facesizes2,
-  size_t nfaces2,
-  double* vertices3,
-  size_t nvertices3,
-  int* faces3,
-  int* facesizes3,
-  size_t nfaces3)
-{
-  Polyhedron P1 = buildPolyhedron(vertices1, nvertices1, faces1, facesizes1, nfaces1);
-  printf("P1 is closed: %u\n", P1.is_closed());
-  printf("P1 is valid: %u\n", P1.is_valid());
-  Polyhedron P2 = buildPolyhedron(vertices2, nvertices2, faces2, facesizes2, nfaces2);
-  printf("P2 is closed: %u\n", P2.is_closed());
-  printf("P2 is valid: %u\n", P2.is_valid());
-  Polyhedron P3 = buildPolyhedron(vertices3, nvertices3, faces3, facesizes3, nfaces3);
-  printf("P3 is closed: %u\n", P3.is_closed());
-  printf("P3 is valid: %u\n", P3.is_valid());
-  printf("run union\n");
-  MeshT* mesh = unitePolyhedra(P1, P2, P3);
-  return mesh;
-}
-
+// MeshT* unionThreePolyhedra(
+//   double* vertices1,
+//   size_t nvertices1,
+//   int* faces1,
+//   int* facesizes1,
+//   size_t nfaces1,
+//   double* vertices2,
+//   size_t nvertices2,
+//   int* faces2,
+//   int* facesizes2,
+//   size_t nfaces2,
+//   double* vertices3,
+//   size_t nvertices3,
+//   int* faces3,
+//   int* facesizes3,
+//   size_t nfaces3)
+// {
+//   Polyhedron P1 = buildPolyhedron(vertices1, nvertices1, faces1, facesizes1, nfaces1);
+//   printf("P1 is closed: %u\n", P1.is_closed());
+//   printf("P1 is valid: %u\n", P1.is_valid());
+//   Polyhedron P2 = buildPolyhedron(vertices2, nvertices2, faces2, facesizes2, nfaces2);
+//   printf("P2 is closed: %u\n", P2.is_closed());
+//   printf("P2 is valid: %u\n", P2.is_valid());
+//   Polyhedron P3 = buildPolyhedron(vertices3, nvertices3, faces3, facesizes3, nfaces3);
+//   printf("P3 is closed: %u\n", P3.is_closed());
+//   printf("P3 is valid: %u\n", P3.is_valid());
+//   printf("run union\n");
+//   MeshT* mesh = unitePolyhedra(P1, P2, P3);
+//   return mesh;
+// }
+//
 
 
 

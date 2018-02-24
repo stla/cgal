@@ -1,7 +1,7 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Mesh
-  (c_polyhedraIntersection, cMeshToMesh, c_convexParts, c_polyhedraUnion, c_unionNpolyhedra, CPolyhedron (..))
+  (c_polyhedraIntersection, cMeshToMesh, c_convexParts, c_unionNpolyhedra, CPolyhedron (..))
   where
 import           Control.Monad       ((<$!>), (=<<))
 import           Types
@@ -145,9 +145,9 @@ foreign import ccall unsafe "intersectionTwoPolyhedra" c_polyhedraIntersection
   :: Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize
   -> Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize -> IO (Ptr CMesh)
 
-foreign import ccall unsafe "unionTwoPolyhedra" c_polyhedraUnion
-  :: Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize
-  -> Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize -> IO (Ptr CMesh)
+-- foreign import ccall unsafe "unionTwoPolyhedra" c_polyhedraUnion
+--   :: Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize
+--   -> Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize -> IO (Ptr CMesh)
 
 foreign import ccall unsafe "convexParts" c_convexParts
   :: Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize -> Ptr CSize
