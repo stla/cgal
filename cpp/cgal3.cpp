@@ -201,21 +201,21 @@ MeshT* intersectPolyhedra(Polyhedron P1, Polyhedron P2){
   return out;
 }
 
-MeshT* unitePolyhedra(Polyhedron P1, Polyhedron P2, Polyhedron P3){
+MeshT* unitePolyhedra(Polyhedron* Polys, unsigned npolyhedras){
   MeshT* out = (MeshT*)malloc(sizeof(MeshT));
+  Nef_polyhedron* nefs = (Nef_polyhedron*)malloc(npolyhedras * sizeof(Nef_polyhedron));
   /* convert polyhedra to nefs */
-  printf("- make nef1\n");
-  Nef_polyhedron nef1(P1);
-  printf("- make nef2\n");
-  Nef_polyhedron nef2(P2);
-  printf("- make nef3\n");
-  Nef_polyhedron nef3(P3);
-  /* compute the intersection */
-  printf("make nefs union\n");
-  Nef_polyhedron nef = nef1 + nef2 + nef3;
+  for(unsigned i=0; i < npolyhedras; i++){
+    Nef_polyhedron nefs[i](Polys[i]);
+  }
+  /* compute the union */
+  Nef_polyhedron N(Nef_polyhedron::EMPTY);
+  for(unsigned i=0; i < npolyhedras; i++){
+    N += nefs[i];
+  }
   /* surface mesh */
   Surface_mesh smesh;
-  CGAL::convert_nef_polyhedron_to_polygon_mesh(nef, smesh);
+  CGAL::convert_nef_polyhedron_to_polygon_mesh(N, smesh);
   /* write OFF file */
   std::ofstream outfile;
   outfile.open("union.off");
@@ -223,6 +223,7 @@ MeshT* unitePolyhedra(Polyhedron P1, Polyhedron P2, Polyhedron P3){
   outfile.close();
   /* output */
   *out = surfacemeshToMesh(smesh);
+//  delete nefs[];
   return out;
 }
 
@@ -259,30 +260,17 @@ MeshT* unionNPolyhedra(
   unsigned npolyhedras)
 {
   printf("run unionNPolyhedra\n");
-  Polyhedron P1 = buildPolyhedron(polyhedras[0].vertices,
-                                  polyhedras[0].nvertices,
-                                  polyhedras[0].faces,
-                                  polyhedras[0].facesizes,
-                                  polyhedras[0].nfaces);
-  printf("P1 is closed: %u\n", P1.is_closed());
-  printf("P1 is valid: %u\n", P1.is_valid());
-  Polyhedron P2 = buildPolyhedron(polyhedras[1].vertices,
-                                  polyhedras[1].nvertices,
-                                  polyhedras[1].faces,
-                                  polyhedras[1].facesizes,
-                                  polyhedras[1].nfaces);
-  printf("P2 is closed: %u\n", P2.is_closed());
-  printf("P2 is valid: %u\n", P2.is_valid());
-  Polyhedron P3 = buildPolyhedron(polyhedras[2].vertices,
-                                  polyhedras[2].nvertices,
-                                  polyhedras[2].faces,
-                                  polyhedras[2].facesizes,
-                                  polyhedras[2].nfaces);
-  printf("P3 is closed: %u\n", P3.is_closed());
-  printf("P3 is valid: %u\n", P3.is_valid());
-  MeshT* mesh = unitePolyhedra(P1, P2, P3);
+  Polyhedron* Polys = (Polyhedron*)malloc(npolyhedras * sizeof(Polyhedron));
+  for(unsigned i=0; i < npolyhedras; i++){
+    Polys[i] = buildPolyhedron(polyhedras[i].vertices,
+                               polyhedras[i].nvertices,
+                               polyhedras[i].faces,
+                               polyhedras[i].facesizes,
+                               polyhedras[i].nfaces);
+  }
+  MeshT* mesh = unitePolyhedra(Polys, npolyhedras);
+  //free Polys;
   return mesh;
-
 }
 
 MeshT* unionThreePolyhedra(

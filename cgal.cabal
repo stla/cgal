@@ -35,7 +35,7 @@ library
                      , containers
                      , permutation
   include-dirs:        cpp
-  C-sources:           cpp/cgal2.cpp
+  C-sources:           cpp/cgal3.cpp
                      , cpp/utils.cpp
   extra-libraries:     stdc++
                      , CGAL
@@ -68,7 +68,7 @@ executable testunion
   else
     buildable:         False
   hs-source-dirs:      src-exe
-  main-is:             MainUnion2.hs
+  main-is:             MainUnion3.hs
   ghc-options:         -O2 -Wall
   build-depends:       base >= 4.7 && < 5
                      , cgal
