@@ -11,43 +11,39 @@ import           Mesh
 import           Types
 import Examples
 
-dbl2Cdbl :: [[Double]] -> [CDouble]
-dbl2Cdbl = concatMap (map realToFrac)
-int2Cint :: [[Int]] -> [CInt]
-int2Cint = concatMap (map fromIntegral)
+
+-- -- thetesta 3 [4,4,4] [[[0,0,0],[0,0,1],[0,1,0],[1,1,0]], [[0,0,0],[0,0,1],[0,1,0],[1,1,0]], [[0,0,0],[0,0,1],[0,1,0],[1,1,0]]]
+-- thetesta :: Int -> Int -> [[[Double]]] -> IO CDouble
+-- thetesta npolyhedra polyhedraSizes vertices = do
+--   --alloca $ \np -> do
+--       alloca $ \ps -> do
+--         alloca $ \vs -> do
+--           res <- c_testa (fromIntegral npolyhedra) ps vs
+--
+--           vs' <- peek vs
+--           ps' <- peek ps
+--           --np' <- peek np    -- I MISSED THIS ONE. Extra dereferencing needed.
+--           --np'' <- fromIntegral <$> peek np
+--           return res
+
+  -- polyhedraSizesPtr <- mallocBytes (npolyhedra * sizeOf (undefined :: CSize))
+  -- pokeArray polyhedraSizesPtr (map fromIntegral polyhedraSizes :: [CSize])
+  -- verticesPtrPtr <- mallocBytes (npolyhedra * sizeOf (undefined :: Ptr (Ptr CDouble)))
+  -- forM_ polyhedraSizes
+  --   (\polyhedronsize -> do
+  --     polyhedronsizePtr <- mallocBytes (length polyhedraSizes * sizeOf (undefined :: CSize))
+  --     pokeArray polyhedronsizePtr (map fromIntegral polyhedraSizes :: [CSize])
+  --     verticesPtr <- mallocBytes (3 * sizeOf (undefined :: CDouble))
+  --     poke verticesPtr (realToFrac $ (sum . map length) vertices :: CDouble) :: IO ()
+  --     poke (verticesPtr) vertices)
+  -- c_testa (fromIntegral npolyhedra) polyhedraSizesPtr verticesPtrPtr
 
 
-polyhedraUnion :: [([[Double]],[[Int]])] -> IO Mesh
-polyhedraUnion verticesFaces = do
-  let verticesList = map fst verticesFaces
-      facesList = map snd verticesFaces
-      nverticesList = map length verticesList
-      facesizesList = map (map length) facesList
-      totalFacesizesList = map sum facesizesList
-  return zoubi
-
-makeCPolyhedron :: ([[Double]], [[Int]]) -> IO CPolyhedron
-makeCPolyhedron (vertices, faces) = do
-  let nvertices = length vertices
-      facesizes = map length faces
-      totalFacesizes = sum facesizes
-      nfaces = length faces
-  vsPtr <- mallocBytes (nvertices * 3 * sizeOf (undefined :: CDouble))
-  pokeArray vsPtr (dbl2Cdbl vertices)
-  fsPtr <- mallocBytes (totalFacesizes * sizeof (undefined :: CInt))
-  pokeArray fsPtr (int2Cint faces)
-  fssPtr <- mallocBytes (nfaces * sizeOf (undefined :: CInt))
-  pokeArray fssPtr facesizesList
-  let cp = CPolyhedron
-            { __vertices' = vsPtr
-            , __nvertices'' = fromIntegral nvertices
-            , __faces' = fsPtr
-            , __facesizes' = fssPtr
-            , __nfaces' = fromIntegral nfaces
-            }
-  return cp
-
-
+-- polyhedraUnion :: Mesh -> Mesh -> IO Mesh
+-- polyhedraUnion mesh1 mesh2 = do
+--   let mesh1' = unmakeMesh mesh1
+--       mesh2' = unmakeMesh mesh2
+--   polyhedraUnion_ mesh1' mesh2'
 
 polyhedraUnion_ :: ([[Double]],[[Int]]) -> ([[Double]],[[Int]]) -> ([[Double]],[[Int]]) -> IO Mesh
 polyhedraUnion_ (vertices1, faces1) (vertices2, faces2) (vertices3, faces3) = do
@@ -100,6 +96,6 @@ polyhedraUnion_ (vertices1, faces1) (vertices2, faces2) (vertices3, faces3) = do
   cMeshToMesh cmesh
 
 test3cubes :: IO Mesh
-test3cubes =
+test3cubes = do
   polyhedraUnion_ (cubeVertices1, cubeTriFaces1) (cubeVertices2, cubeTriFaces2)
                   (cubeVertices3, cubeTriFaces3)

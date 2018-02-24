@@ -1,4 +1,3 @@
-{-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 import qualified Data.IntMap.Strict as IM
 import           Data.Maybe
@@ -79,15 +78,15 @@ main = do
   -- p1.faces = cubeTriFaces1;
   -- p1.facesizes = {3,3,3,3,3,3,3,3,3,3,3,3};
   -- p1.nfaces = 12;
-  putStrLn "a"
+  putStrLn "a" -- 8 = nvertices
   vsPtr1 <- mallocBytes(8 * 3 * sizeOf(undefined :: CDouble))
   putStrLn "b"
   pokeArray vsPtr1 (dbl2Cdbl cubeVertices1)
-  putStrLn "c"
+  putStrLn "c" -- 12*3 = sum facesizes 
   fsPtr1 <- mallocBytes(12 * 3 * sizeOf(undefined :: CInt))
   putStrLn "d"
   pokeArray fsPtr1 (int2Cint cubeTriFaces1)
-  putStrLn "e"
+  putStrLn "e" -- 12 = nfaces
   fssPtr1 <- mallocBytes(12 * sizeOf(undefined :: CInt))
   putStrLn "f"
   pokeArray fssPtr1 [3,3,3,3,3,3,3,3,3,3,3,3]
@@ -100,9 +99,9 @@ main = do
             , __facesizes' = fssPtr1
             , __nfaces' = 12
             }
-  vsPtr2 <- mallocBytes(8 * 3 *sizeOf(undefined :: CDouble))
+  vsPtr2 <- mallocBytes(8 * 3 * sizeOf(undefined :: CDouble))
   pokeArray vsPtr2 (dbl2Cdbl cubeVertices2)
-  fsPtr2 <- mallocBytes(12 * 3* sizeOf(undefined :: CInt))
+  fsPtr2 <- mallocBytes(12 * 3 * sizeOf(undefined :: CInt))
   pokeArray fsPtr2 (int2Cint cubeTriFaces2)
   fssPtr2 <- mallocBytes(12 * sizeOf(undefined :: CInt))
   pokeArray fssPtr2 [3,3,3,3,3,3,3,3,3,3,3,3]
@@ -136,6 +135,16 @@ main = do
   union <- peek unionPtr
   mesh <- cMeshToMesh union
   pPrint mesh
+
+  putStrLn "vertices:"
+  pPrint $ IM.elems (_vertices mesh)
+  putStrLn "faces:"
+  pPrint $ map _verticesIds (_faces mesh)
+  putStrLn "edges:"
+  pPrint $ fromJust $ _edges mesh
+
+
+
 
   -- --  ### CECI MARCHE ### --
   -- union <- polyhedraUnion_ (cubeVertices3, cubeTriFaces3) (cubeVertices2, cubeTriFaces2) (cubeVertices1, cubeTriFaces1)
