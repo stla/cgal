@@ -203,16 +203,20 @@ MeshT* intersectPolyhedra(Polyhedron P1, Polyhedron P2){
 
 MeshT* unitePolyhedra(Polyhedron* Polys, unsigned npolyhedras){
   MeshT* out = (MeshT*)malloc(sizeof(MeshT));
-  Nef_polyhedron* nefs = (Nef_polyhedron*)malloc(npolyhedras * sizeof(Nef_polyhedron));
+  //Nef_polyhedron* nefs = (Nef_polyhedron*)malloc(npolyhedras * sizeof(Nef_polyhedron));
+  Nef_polyhedron* nefs = new Nef_polyhedron[npolyhedras];
   /* convert polyhedra to nefs */
   for(unsigned i=0; i < npolyhedras; i++){
-    Nef_polyhedron nefs[i](Polys[i]);
+    Nef_polyhedron (nefs[i])(Polys[i]);
   }
   /* compute the union */
-  Nef_polyhedron N(Nef_polyhedron::EMPTY);
-  for(unsigned i=0; i < npolyhedras; i++){
-    N += nefs[i];
+  // Nef_polyhedron N(Nef_polyhedron::EMPTY);
+  Nef_polyhedron N(Polys[0]);
+  for(unsigned i=1; i < npolyhedras; i++){
+    Nef_polyhedron nef(Polys[i]);
+    N = N + nef;
   }
+  //std::cout << N;
   /* surface mesh */
   Surface_mesh smesh;
   CGAL::convert_nef_polyhedron_to_polygon_mesh(N, smesh);
@@ -223,7 +227,7 @@ MeshT* unitePolyhedra(Polyhedron* Polys, unsigned npolyhedras){
   outfile.close();
   /* output */
   *out = surfacemeshToMesh(smesh);
-//  delete nefs[];
+  //delete[] nefs;
   return out;
 }
 
@@ -260,18 +264,20 @@ MeshT* unionNPolyhedra(
   unsigned npolyhedras)
 {
   printf("run unionNPolyhedra\n");
-  Polyhedron* Polys = (Polyhedron*)malloc(npolyhedras * sizeof(Polyhedron));
+  // Polyhedron* Polys = (Polyhedron*)malloc(npolyhedras * sizeof(Polyhedron));
+  Polyhedron* Polys = new Polyhedron[npolyhedras];
   for(unsigned i=0; i < npolyhedras; i++){
     printf("i: %u\n", i);
-    printf("nvertices: %Iu\n", polyhedras[i].nvertices); 
+    printf("nvertices: %Iu\n", polyhedras[i].nvertices);
     Polys[i] = buildPolyhedron(polyhedras[i].vertices,
                                polyhedras[i].nvertices,
                                polyhedras[i].faces,
                                polyhedras[i].facesizes,
                                polyhedras[i].nfaces);
+    std::cout << Polys[i];
   }
   MeshT* mesh = unitePolyhedra(Polys, npolyhedras);
-//  free Polys;
+  //delete[] Polys;
   return mesh;
 }
 
