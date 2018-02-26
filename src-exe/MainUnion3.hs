@@ -21,12 +21,61 @@ approx n x = fromInteger (round $ x * (10^n)) / (10.0^^n)
 
 toDbl (Vertex3 x y z) = [x,y,z]
 
+fromPair (Pair i j) = (i,j)
+
 main :: IO ()
 main = do
 
-  mesh <- polyhedraUnions
-          [(cubeVertices1, cubeTriFaces1), (cubeVertices2, cubeTriFaces2), (cubeVertices3, cubeTriFaces3)]
+ -- -- union of cubes --
+ --  mesh <- polyhedraUnions
+ --          [(cubeVertices1, cubeTriFaces1), (cubeVertices2, cubeTriFaces2), (cubeVertices3, cubeTriFaces3),
+ --           (cubeVertices4, cubeTriFaces4), (cubeVertices5, cubeTriFaces5)]
+ --  pPrint mesh
+ --  putStrLn "vertices:"
+ --  pPrint $ IM.elems (_vertices mesh)
+ --  putStrLn "faces:"
+ --  pPrint $ map _verticesIds (_faces mesh)
+ --  putStrLn "edges:"
+ --  pPrint $ map fromPair $ fromJust $ _edges mesh
+
+
+  -- union of tetrahedra --
+  mesh <- polyhedraUnions tetrahedra
+--          [tetrahedra !! 0, tetrahedra !! 1, tetrahedra !! 2, tetrahedra !! 3, tetrahedra !! 4]
+
   pPrint mesh
+  putStrLn "vertices:"
+  pPrint $ IM.elems (_vertices mesh)
+  putStrLn "faces:"
+  pPrint $ map _verticesIds (_faces mesh)
+  putStrLn "edges:"
+  pPrint $ map fromPair $ fromJust $ _edges mesh
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   -- vsPtr1 <- malloc
   -- pokeArray vsPtr1 (concatMap (map realToFrac) cubeVertices1 :: [CDouble])

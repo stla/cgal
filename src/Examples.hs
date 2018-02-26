@@ -3,27 +3,27 @@ import Helpers
 import Types
 
 -- -- five Tetrahedra -- --
-fiveTetrahedraVertices :: [[Double]]
-fiveTetrahedraVertices = [[ a,  a,  a],
-                          [ a,  a, -a],
-                          [ a, -a,  a],
-                          [-a, -a,  a],
-                          [-a,  a, -a],
-                          [-a,  a,  a],
-                          [ 0,  b, -c],
-                          [ 0, -b, -c],
-                          [ 0, -b,  c],
-                          [ c,  0, -b],
-                          [-c,  0, -b],
-                          [-c,  0,  b],
-                          [ b,  c,  0],
-                          [ b, -c,  0],
-                          [-b, -c,  0],
-                          [-b,  c,  0],
-                          [ 0,  b,  c],
-                          [ a, -a, -a],
-                          [ c,  0,  b],
-                          [-a, -a, -a]]
+fiveTetrahedraVertices :: [[[Double]]]
+fiveTetrahedraVertices = [[[ a,  a,  a],
+                           [ a,  a, -a],
+                           [ a, -a,  a],
+                           [-a, -a,  a]],
+                          [[-a,  a, -a],
+                           [-a,  a,  a],
+                           [ 0,  b, -c],
+                           [ 0, -b, -c]],
+                          [[ 0, -b,  c],
+                           [ c,  0, -b],
+                           [-c,  0, -b],
+                           [-c,  0,  b]],
+                          [[ b,  c,  0],
+                           [ b, -c,  0],
+                           [-b, -c,  0],
+                           [-b,  c,  0]],
+                          [[ 0,  b,  c],
+                           [ a, -a, -a],
+                           [ c,  0,  b],
+                           [-a, -a, -a]]]
   where
     phi = (1 + sqrt 5) / 2
     a = 1 / sqrt 3
@@ -54,6 +54,16 @@ fiveTetrahedraFaces =
                   [19, 8,15],
                   [ 8, 9,15],
                   [19, 9, 8]]
+
+tetrahedra :: [([[Double]], [[Int]])]
+tetrahedra =
+    [  fixIndices (concat fiveTetrahedraVertices) (fiveTetrahedraFaces!!0)
+     , fixIndices (concat fiveTetrahedraVertices) (fiveTetrahedraFaces!!1)
+     , fixIndices (concat fiveTetrahedraVertices) (fiveTetrahedraFaces!!2)
+     , fixIndices (concat fiveTetrahedraVertices) (fiveTetrahedraFaces!!3)
+     , fixIndices (concat fiveTetrahedraVertices) (fiveTetrahedraFaces!!4) ]
+
+
 
 -- -- five cubes -- --
 cubeVertices :: [[Double]]
