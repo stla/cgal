@@ -69,12 +69,12 @@ main = do
                     [1,6,10,2],
                     [10,6,18,19] ]
                 ]
-  let cube1 = makeMesh $ fixIndices allVertices (allFaces!!0)
-      cube2 = makeMesh $ fixIndices allVertices (allFaces!!1)
-      cube3 = makeMesh $ fixIndices allVertices (allFaces!!2)
-      cube4 = makeMesh $ fixIndices allVertices (allFaces!!3)
-      cube5 = makeMesh $ fixIndices allVertices (allFaces!!4)
-  inter1 <- polyhedraIntersection cube1 cube2
+  let cube1 = fixIndices allVertices (allFaces!!0)
+      cube2 = fixIndices allVertices (allFaces!!1)
+      cube3 = fixIndices allVertices (allFaces!!2)
+      cube4 = fixIndices allVertices (allFaces!!3)
+      cube5 = fixIndices allVertices (allFaces!!4)
+  inter1 <- polyhedraIntersections [cube1, cube2]
   -- inter2 <- polyhedraIntersection inter1 cube3
   -- inter3 <- polyhedraIntersection inter2 cube4
   -- inter4 <- polyhedraIntersection inter3 cube5

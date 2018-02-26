@@ -234,52 +234,23 @@ MeshT* unionNPolyhedra(
   return mesh;
 }
 
-// MeshT* unionThreePolyhedra(
-//   double* vertices1,
-//   size_t nvertices1,
-//   int* faces1,
-//   int* facesizes1,
-//   size_t nfaces1,
-//   double* vertices2,
-//   size_t nvertices2,
-//   int* faces2,
-//   int* facesizes2,
-//   size_t nfaces2,
-//   double* vertices3,
-//   size_t nvertices3,
-//   int* faces3,
-//   int* facesizes3,
-//   size_t nfaces3)
-// {
-//   Polyhedron P1 = buildPolyhedron(vertices1, nvertices1, faces1, facesizes1, nfaces1);
-//   printf("P1 is closed: %u\n", P1.is_closed());
-//   printf("P1 is valid: %u\n", P1.is_valid());
-//   Polyhedron P2 = buildPolyhedron(vertices2, nvertices2, faces2, facesizes2, nfaces2);
-//   printf("P2 is closed: %u\n", P2.is_closed());
-//   printf("P2 is valid: %u\n", P2.is_valid());
-//   Polyhedron P3 = buildPolyhedron(vertices3, nvertices3, faces3, facesizes3, nfaces3);
-//   printf("P3 is closed: %u\n", P3.is_closed());
-//   printf("P3 is valid: %u\n", P3.is_valid());
-//   printf("run union\n");
-//   MeshT* mesh = unitePolyhedra(P1, P2, P3);
-//   return mesh;
-// }
-//
 
-/* intersection of two polyhedra */
-MeshT* intersectPolyhedra(Polyhedron P1, Polyhedron P2){
+
+
+
+/** intersections **/
+
+/* intersect Polyhedra, returns a surface mesh */
+MeshT* intersectPolyhedra(Polyhedron* Polys, unsigned npolyhedras){
   MeshT* out = (MeshT*)malloc(sizeof(MeshT));
-  /* convert polyhedra to nefs */
-  printf("make nef1\n");
-  Nef_polyhedron nef1(P1);
-  printf("make nef2\n");
-  Nef_polyhedron nef2(P2);
-  /* compute the intersection */
-  printf("make nefs intersection\n");
-  Nef_polyhedron nef = nef1*nef2;
+  Nef_polyhedron N(Polys[0]);
+  for(unsigned i=1; i < npolyhedras; i++){
+    Nef_polyhedron nef(Polys[i]);
+    N = N * nef;
+  }
   /* surface mesh */
   Surface_mesh smesh;
-  CGAL::convert_nef_polyhedron_to_polygon_mesh(nef, smesh);
+  CGAL::convert_nef_polyhedron_to_polygon_mesh(N, smesh);
   /* write OFF file */
   std::ofstream outfile;
   outfile.open("intersection.off");
@@ -291,31 +262,25 @@ MeshT* intersectPolyhedra(Polyhedron P1, Polyhedron P2){
 }
 
 
-/* intersection of two polyhedra */
-MeshT* intersectionTwoPolyhedra(
-  double* vertices1,
-  size_t nvertices1,
-  int* faces1,
-  int* facesizes1,
-  size_t nfaces1,
-  double* vertices2,
-  size_t nvertices2,
-  int* faces2,
-  int* facesizes2,
-  size_t nfaces2)
+/* build polyhedras and run intersectPolyhedra */
+MeshT* intersectionNPolyhedra(
+  polyhedronT* polyhedras,
+  unsigned npolyhedras)
 {
-  printf("build P1\n");
-  Polyhedron P1 = buildPolyhedron(vertices1, nvertices1, faces1, facesizes1, nfaces1);
-  printf("P1 is closed: %u\n", P1.is_closed());
-  printf("P1 is valid: %u\n", P1.is_valid());
-  // std::cout << P1;
-  printf("build P2\n");
-  Polyhedron P2 = buildPolyhedron(vertices2, nvertices2, faces2, facesizes2, nfaces2);
-  printf("P2 is closed: %u\n", P2.is_closed());
-  printf("P2 is valid: %u\n", P2.is_valid());
-  // std::cout << P2;
-  printf("run intersection\n");
-  MeshT* mesh = intersectPolyhedra(P1, P2);
+  printf("run intersectionNPolyhedra\n");
+  Polyhedron* Polys = new Polyhedron[npolyhedras];
+  for(unsigned i=0; i < npolyhedras; i++){
+    printf("i: %u\n", i);
+    printf("nvertices: %Iu\n", polyhedras[i].nvertices);
+    Polys[i] = buildPolyhedron(polyhedras[i].vertices,
+                               polyhedras[i].nvertices,
+                               polyhedras[i].faces,
+                               polyhedras[i].facesizes,
+                               polyhedras[i].nfaces);
+    std::cout << Polys[i];
+  }
+  MeshT* mesh = intersectPolyhedra(Polys, npolyhedras);
+  delete[] Polys;
   return mesh;
 }
 

@@ -6,48 +6,11 @@ import           Foreign.C.Types
 import           Foreign.Marshal.Alloc (free, mallocBytes)
 import           Foreign.Marshal.Array (peekArray, pokeArray)
 import           Foreign.Storable      (peek, poke, sizeOf)
-import           Helpers               (unmakeMesh)
+import           Helpers               
 import           Mesh
 import           Types
 import Examples
 
-dbl2Cdbl :: [[Double]] -> [CDouble]
-dbl2Cdbl = concatMap (map realToFrac)
-int2Cint :: [[Int]] -> [CInt]
-int2Cint = concatMap (map fromIntegral)
-
--- polyhedraUnion :: [([[Double]],[[Int]])] -> IO Mesh
--- polyhedraUnion verticesFaces = do
---   let verticesList = map fst verticesFaces
---       facesList = map snd verticesFaces
---       nverticesList = map length verticesList
---       facesizesList = map (map length) facesList
---       totalFacesizesList = map sum facesizesList
---   return zoubi
-
-makeCPolyhedron :: ([[Double]], [[Int]]) -> IO CPolyhedron
-makeCPolyhedron (vertices, faces) = do
-  let nvertices = length vertices
-      facesizes = map length faces
-      totalFacesizes = sum facesizes
-      nfaces = length faces
-  vsPtr <- mallocBytes (nvertices * 3 * sizeOf (undefined :: CDouble))
-  pokeArray vsPtr (dbl2Cdbl vertices)
-  fsPtr <- mallocBytes (totalFacesizes * sizeOf (undefined :: CInt))
-  pokeArray fsPtr (int2Cint faces)
-  fssPtr <- mallocBytes (nfaces * sizeOf (undefined :: CInt))
-  pokeArray fssPtr (map fromIntegral facesizes)
-  let cp = CPolyhedron
-            { __vertices' = vsPtr
-            , __nvertices'' = fromIntegral nvertices
-            , __faces' = fsPtr
-            , __facesizes' = fssPtr
-            , __nfaces' = fromIntegral nfaces
-            }
-  return cp
-
-makeCPolyhedra :: [([[Double]], [[Int]])] -> IO [CPolyhedron]
-makeCPolyhedra = mapM makeCPolyhedron
 
 polyhedraUnions :: [([[Double]], [[Int]])] -> IO Mesh
 polyhedraUnions polyhedras = do

@@ -1,7 +1,12 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Mesh
-  (c_polyhedraIntersection, cMeshToMesh, c_convexParts, c_unionNpolyhedra, CPolyhedron (..))
+( c_polyhedraIntersection
+, cMeshToMesh
+, c_convexParts
+, c_unionNpolyhedra
+, c_intersectionNpolyhedra
+, CPolyhedron (..))
   where
 import           Control.Monad       ((<$!>), (=<<))
 import           Types
@@ -140,21 +145,12 @@ cMeshToMesh cmesh = do
                 , _faces = faces'
                 , _edges = Just edges}
 
-
-foreign import ccall unsafe "intersectionTwoPolyhedra" c_polyhedraIntersection
-  :: Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize
-  -> Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize -> IO (Ptr CMesh)
-
--- foreign import ccall unsafe "unionTwoPolyhedra" c_polyhedraUnion
---   :: Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize
---   -> Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize -> IO (Ptr CMesh)
-
 foreign import ccall unsafe "convexParts" c_convexParts
   :: Ptr CDouble -> CSize -> Ptr CInt -> Ptr CInt -> CSize -> Ptr CSize
   -> IO (Ptr CMesh)
 
 foreign import ccall unsafe "unionNPolyhedra" c_unionNpolyhedra
   :: Ptr CPolyhedron -> CUInt -> IO (Ptr CMesh)
---  MeshT* unionNPolyhedra(
---    polyhedronT* polyhedras,
---    unsigned npolyhedras)
+
+foreign import ccall unsafe "intersectionNPolyhedra" c_intersectionNpolyhedra
+  :: Ptr CPolyhedron -> CUInt -> IO (Ptr CMesh)

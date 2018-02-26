@@ -194,6 +194,6 @@ foreign import ccall unsafe "convexParts" c_convexParts
 
 foreign import ccall unsafe "unionNPolyhedra" c_unionNpolyhedra
   :: Ptr CPolyhedron -> CUInt -> IO (Ptr CMesh)
---  MeshT* unionNPolyhedra(
---    polyhedronT* polyhedras,
---    unsigned npolyhedras)
+
+foreign import ccall unsafe "intersectionNPolyhedra" c_intersectionNpolyhedra
+  :: Ptr CPolyhedron -> CUInt -> IO (Ptr CMesh)

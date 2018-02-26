@@ -35,7 +35,7 @@ library
                      , containers
                      , permutation
   include-dirs:        cpp
-  C-sources:           cpp/cgal3.cpp
+  C-sources:           cpp/cgal4.cpp
                      , cpp/utils.cpp
   extra-libraries:     stdc++
                      , CGAL
