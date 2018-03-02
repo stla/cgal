@@ -1,7 +1,7 @@
 module Helpers
   where
 import qualified Data.IntMap.Strict as IM
-import           Data.List             (union)
+import           Data.List             (union, nub, intersect)
 import           Data.Permute          (elems, rank)
 import           Types
 import           Foreign.C.Types
@@ -9,6 +9,8 @@ import           Foreign.Marshal.Alloc (free, mallocBytes)
 import           Foreign.Marshal.Array (pokeArray)
 import           Foreign.Storable      (peek, sizeOf)
 import Mesh
+import Safe (atMay)
+import Data.Maybe
 
 makeMesh :: ([[Double]], [[Int]]) -> Mesh
 makeMesh (vertices, faces) =
@@ -39,13 +41,16 @@ unmakeMesh mesh = (vertices, faces)
 fixIndices :: [[Double]] -> [[Int]] -> ([[Double]], [[Int]])
 fixIndices allVertices faces = (newvertices, newfaces)
   where
-  faceselems = foldr union [] faces
+  faceselems = nub $ foldr union [] faces
   l = length faceselems
   permute = elems $ rank l faceselems
   mapper = IM.fromList $ zip permute faceselems
   mapper' = IM.fromList $ zip faceselems permute
   newfaces = map (map ((IM.!) mapper')) faces
-  newvertices = [allVertices !! (mapper IM.! i) | i <- [0 .. l-1]]
+  --newvertices =
+--    (fromJust <$> (filter isJust $ (map atMay ([allVertices !! (mapper IM.! i) | i <- IM.keys mapper])))) `intersect` IM.keys mapper
+  -- newvertices = [allVertices !! (mapper IM.! i) | i <- IM.keys mapper]
+  newvertices = [allVertices !! i | i <- [0 .. length allVertices-1] `intersect` IM.keys mapper]
 
 -- | round the vertices of a mesh
 roundVertices :: Int -> Mesh -> Mesh

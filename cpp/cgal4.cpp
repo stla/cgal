@@ -61,33 +61,57 @@ public:
     /* create a cgal incremental builder */
     CGAL::Polyhedron_incremental_builder_3<HalfedgeDS> B( hds, true);
     // B.begin_surface( coords.size()/3, facesizes.size()); // faces.size /3 ?
-    B.begin_surface( coords.size()/3, 3*facesizes.size()); // faces.size /3 ?
-      /* add the polyhedron vertices */
+    B.begin_surface( coords.size()/3, facesizes.size()); // faces.size /3 ?
+    /* add the polyhedron vertices */
       for(int i=0; i<(int)coords.size(); i+=3){
         B.add_vertex( Point( coords[i+0], coords[i+1], coords[i+2] ) );
       }
-      // for(int i=0; i<(int)coords.size()/3; i++){
-      //   if(std::find(faces.begin(), faces.end(), i) != faces.end()) { // checks if i belongs to faces - https://stackoverflow.com/questions/3450860/check-if-a-stdvector-contains-a-certain-object
-      //     B.add_vertex( Point( coords[3*i+0], coords[3*i+1], coords[3*i+2] ) );
-      //   }
-      // }
       /* add the polyhedron faces */
-      int i=0;
-      for(int k=0; k<(int)facesizes.size(); k++){
-        int fs = facesizes[k];
-        B.begin_facet();
-        for(int j=0; j<fs; j++){
-          B.add_vertex_to_facet( faces[i+j] );
+            int i=0;
+            for(int k=0; k<(int)facesizes.size(); k++){
+              int fs = facesizes[k];
+              B.begin_facet();
+              for(int j=0; j<fs; j++){
+                B.add_vertex_to_facet( faces[i+j] );
+              }
+              i += fs;
+              B.end_facet();
+            }
+          /* finish up the surface */
+          B.end_surface();
         }
-        B.end_facet();
-        i += fs;
-      }
-    /* finish up the surface */
-    B.end_surface();
-  }
-};
 
+      };
 
+      // for(int i=0; i<(int)coords.size(); i+=3){
+      //   B.add_vertex( Point( coords[i+0], coords[i+1], coords[i+2] ) );
+      // }
+
+//       // for(int i=0; i<(int)coords.size()/3; i++){
+//       //   if(std::find(faces.begin(), faces.end(), i) != faces.end()) { // checks if i belongs to faces - https://stackoverflow.com/questions/3450860/check-if-a-stdvector-contains-a-certain-object
+//       //     B.add_vertex( Point( coords[3*i+0], coords[3*i+1], coords[3*i+2] ) );
+//       //   }
+//       // }
+//       /* add the polyhedron faces */
+//      int i=0;
+//       for(int k=0; k<(int)facesizes.size(); k++){
+//         int fs = facesizes[k];
+//         // int i=0;
+//         // for( ; i < facesizes[k]; i += fs){
+//           B.begin_facet();
+//           for(int j=0; j<fs; j++){
+//             printf(" facet k: %u;  vertex fs: %u ;  i: %u", k, fs, i);
+//             B.add_vertex_to_facet( faces[i+j] );
+//           }
+//           B.end_facet();
+//           i += fs;
+//         }
+//         /* finish up the surface */
+//     B.end_surface();
+//   }
+// };
+//
+//
 /* build a polyhderon */
 Polyhedron buildPolyhedron(
   double* vertices,

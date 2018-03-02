@@ -1,10 +1,10 @@
 module PolyhedraIntersection
   where
-import           Foreign.C.Types
 import           Foreign.Marshal.Alloc (free, mallocBytes)
+-- import           Foreign.C.Types
 import           Foreign.Marshal.Array (pokeArray)
 import           Foreign.Storable      (peek, sizeOf)
-import           Helpers               
+import           Helpers               (unmakeMesh, makeCPolyhedra)
 import           Mesh
 import           Types
 
@@ -16,5 +16,5 @@ polyhedraIntersections polyhedras = do
   pokeArray cpolyhedrasPtr cpolyhedras
   cmeshPtr <- c_intersectionNpolyhedra cpolyhedrasPtr (fromIntegral npolyhedras)
   cmesh <- peek cmeshPtr
-  free cpolyhedrasPtr
+  free cmeshPtr;
   cMeshToMesh cmesh

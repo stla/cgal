@@ -34,6 +34,8 @@ library
   build-depends:       base >= 4.7 && < 5
                      , containers
                      , permutation
+                     , safe
+                     , linear
   include-dirs:        cpp
   C-sources:           cpp/cgal4.cpp
                      , cpp/utils.cpp

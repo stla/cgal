@@ -6,6 +6,8 @@ packages:
 extra-deps:
 - permutation-0.5.0.5
 
+allow-newer: true
+
 # Override default flag values for local packages and extra-deps
 # flags: {}
 
