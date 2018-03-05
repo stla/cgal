@@ -18,14 +18,16 @@ regularTetrahedronFacets :: [[Int]]
 regularTetrahedronFacets =
   [ [ 0 , 1 , 3 ] , [ 3 , 2 , 0 ] , [ 2 , 1 , 0 ] , [ 1 , 2 , 3 ] ]
 
-
-
-regularTetrahedron' :: [[Double]]
-regularTetrahedron' =
+reuleuxTetrahedron :: [[Double]]
+reuleuxTetrahedron =
   [ [0.5 / sqrt 3, -0.5, 0.5 / sqrt 6]
   , [sqrt 3 / 3, 0, -0.5 / sqrt 6]
   , [0.5 / sqrt 3, 0.5, -0.5 / sqrt 6]
   , [0, 0, 0.5 * sqrt 3 / sqrt 2] ]
+
+reuleuxTetrahedronFacets :: [[Int]]
+reuleuxTetrahedronFacets =
+  [ [ 0 , 1 , 3 ] , [ 3 , 2 , 0 ] , [ 2 , 1 , 0 ] , [ 1 , 2 , 3 ] ]
 
 regularSphere :: Int -> [Double] -> Double -> ([[Double]], [[Int]])
 regularSphere n center rho =

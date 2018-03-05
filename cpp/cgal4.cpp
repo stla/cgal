@@ -29,12 +29,12 @@ typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
 typedef CGAL::Polyhedron_3<Kernel>                        Polyhedron;
 typedef Polyhedron::HalfedgeDS                            HalfedgeDS;
 typedef CGAL::Surface_mesh<Kernel::Point_3>               Surface_mesh;
-//typedef CGAL::Nef_polyhedron_3<Kernel>                    Nef_polyhedron;
+typedef CGAL::Nef_polyhedron_3<Kernel>                    Nef_polyhedron;
 typedef Surface_mesh::Vertex_index                        vertex_descriptor;
 typedef Surface_mesh::Face_index                          face_descriptor;
 typedef Surface_mesh::Edge_index                          edge_descriptor;
 
-typedef CGAL::Nef_polyhedron_3<Kernel, CGAL::SNC_indexed_items> Nef_polyhedron;
+//typedef CGAL::Nef_polyhedron_3<Kernel, CGAL::SNC_indexed_items> Nef_polyhedron;
 typedef Nef_polyhedron::Volume_const_iterator Volume_const_iterator;
 
 /* helper function ot convert gmps to double */
@@ -329,15 +329,21 @@ MeshT* convexParts(
   size_t* nparts)
 {
   Polyhedron P0 = buildPolyhedron(vertices, nvertices, faces, facesizes, nfaces);
-  // TODO: check P0 is closed...
+  printf("P0 is valid: %u\n", P0.is_valid());
+  printf("P0 is closed: %u\n", P0.is_closed());
   Nef_polyhedron N(P0);
   if(N.is_simple()) {
-    N.convert_to_polyhedron(P0);
+    printf("N is simple\n");
+    //N.convert_to_polyhedron(P0);
+    printf("N converted to polyhedron\n");
   }else{
     std::cerr << "N is not a 2-manifold." << std::endl;
   }
+  printf("convex decomposition\n");
   CGAL::convex_decomposition_3(N);
+  printf("convex decomposition done\n");
   std::list<Polyhedron> convex_parts;
+  printf("convex pars list done\n");
   // the first volume is the outer volume, which is ignored in the decomposition
   Volume_const_iterator ci = ++N.volumes_begin();
   for( ; ci != N.volumes_end(); ++ci){
@@ -358,7 +364,7 @@ MeshT* convexParts(
     Surface_mesh smesh = polyhedron2surfacemesh(polyh);
     out[i] = surfacemeshToMesh(smesh);
     /* write OFF file */
-    char filename [50];
+    char filename [500];
     sprintf(filename, "cgal%04Iu.off", i);
     std::ofstream outfile;
     outfile.open(filename);

@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 import           ConvexParts
 import qualified Data.IntMap.Strict    as IM
 import           Text.Show.Pretty
@@ -52,5 +54,5 @@ main = do
   -- meshes <- convexParts_ (vertices, faces)
   -- pPrint meshes
 
-  meshes <- convexParts_ (gsdVertices, gsdFaces)
+  meshes <- convexParts_ (cubeVertices2, cubeTriFaces2)
   pPrint meshes

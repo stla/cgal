@@ -44,10 +44,10 @@ library
                      , CGAL_Core
                      , mpfr
                      , gmp
-  ghc-options:         -Wall -pgml g++
+  ghc-options:         -Wall
   other-extensions:    CPP
                      , ForeignFunctionInterface
---  cc-options:          -fPIC
+  cc-options:          -fPIC
   default-language:    Haskell2010
 
 executable testintersection
@@ -57,7 +57,7 @@ executable testintersection
     buildable:         False
   hs-source-dirs:      src-exe
   main-is:             MainIntersection.hs
-  ghc-options:         -O2 -Wall
+  extra-libraries:     stdc++
   build-depends:       base >= 4.7 && < 5
                      , cgal
                      , pretty-show

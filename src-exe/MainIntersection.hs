@@ -22,7 +22,7 @@ main = do
                                   (sphere1randomCenterB, sphere1facet),
                                   (sphere1randomCenterC, sphere1facet),
                                   (sphere1randomCenterD, sphere1facet),
-                                  (regularTetrahedron, regularTetrahedronFacets)]
+                                  (reuleuxTetrahedron, reuleuxTetrahedronFacets)]
 
 
   -- mesh <- polyhedraIntersections [sphere1', sphere2']
@@ -34,7 +34,17 @@ main = do
   putStrLn "edges:"
   pPrint $ map fromPair $ fromJust $ _edges mesh
 
+  --- results :
+  -- 0.288675 -0.5 0.204124
+  -- 0.57735 0 -0.204124
+  -- 0.288675 0.5 -0.204124
+  -- 0 0 0.612372
+  -- 3  0 1 3
+  -- 3  3 2 0
+  -- 3  2 1 0
+  -- 3  1 2 3
 
+  -- 0.5773503  0.0000000 -0.2041241
 
   -- -- -- five cubes -- --
   -- let x = (1 + sqrt 5) / 2
